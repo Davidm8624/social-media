@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
     <>
       <HeadTag />
       <Navbar />
-      <Container style={{ paddingTop: "1rem" }}>{children}</Container>
+      <Container text style={{ paddingTop: "1rem" }}>{children}</Container>
     </>
   );
 };
