@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect } from "react";
-import { Container, Divider, Form, Segment, TextArea, Button, } from "semantic-ui-react";
+import {
+  Container,
+  Divider,
+  Form,
+  Segment,
+  TextArea,
+  Button,
+} from "semantic-ui-react";
 import { HeaderMessage, FooterMessage } from "../components/common/Message";
 import CommonSocials from "../components/common/CommonSocials";
+import DragNDrop from "../components/common/DragNDrop";
 
 const signup = () => {
   const [user, setUser] = useState({
@@ -9,8 +17,12 @@ const signup = () => {
     email: "",
     password: "",
     bio: "",
+    youtube: "",
+    twitter: "",
+    instagram: "",
+    facebook: "",
   });
-  const userNameRegex = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/igm;
+  const userNameRegex = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/gim;
   const { name, email, password, bio } = user; //destructures so we dont have to use user.name etc
   //form states:
   const [formLoading, setFormLoading] = useState(false);
@@ -21,7 +33,10 @@ const signup = () => {
   const [userNameLoading, setUsernameLoading] = useState(false);
   const [userNameAvaiable, setUserNameAvaiable] = useState(false);
   const [userName, setUserName] = useState("");
-  const [showSocialLinks, setShowSocialLinks] = useState(false)
+  const [showSocialLinks, setShowSocialLinks] = useState(false);
+  const [highLighted, setHighLighted] = useState(false);
+  const [media, setMedia] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
 
   //functions
   const handleSubmit = (e) => {
@@ -36,15 +51,15 @@ const signup = () => {
     }));
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     // const isUser = Object.values({name, email, password}).every(
     //   (item) => {
     //     Boolean(item)
     //   }
     // )
 
-    setSumbitDisabled(!( name && email && password && userName)) //
-  }, [user, userName])
+    setSumbitDisabled(!(name && email && password && userName)); //
+  }, [user, userName]);
 
   return (
     <>
@@ -55,6 +70,17 @@ const signup = () => {
         onSubmit={handleSubmit}
       >
         <Segment>
+          {/* drag and drop here */}
+          <DragNDrop
+            inputRef={inputRef}
+            handleChange={handleChange}
+            media={media}
+            setMedia={setMedia}
+            mediaPreview={mediaPreview}
+            setMediaPreview={setMediaPreview}
+            highLighted={highLighted}
+            setHighLighted={setHighLighted}
+          />
           <Form.Input
             required
             label="Name"
@@ -102,10 +128,10 @@ const signup = () => {
             type={showPassword ? "text" : "password"}
           />
           <Form.Input
-            Loading={userNameLoading}
+            loading={userNameLoading}
             error={!userNameAvaiable}
             required
-            Label="username"
+            label="username"
             placeholder="Username"
             value={userName}
             icon={userNameAvaiable ? "check" : "close"}
@@ -113,31 +139,34 @@ const signup = () => {
             iconPosition="left"
             onChange={(e) => {
               setUserName(e.target.value);
-              const test = userNameRegex.test(e.target.value)
-              if(test || userNameRegex.test(e.target.value)){
-                setUserNameAvaiable(true)
-              }else{
-                setUserNameAvaiable(false)
+              const test = userNameRegex.test(e.target.value);
+              if (test || userNameRegex.test(e.target.value)) {
+                setUserNameAvaiable(true);
+              } else {
+                setUserNameAvaiable(false);
               }
             }}
           />
           <Divider></Divider>
           <Form.Field
-          control={TextArea}
-          name="bio"
-          value={bio}
-          onChange={handleChange}
-          placeholder="bio (optional)"
+            control={TextArea}
+            name="bio"
+            value={bio}
+            onChange={handleChange}
+            placeholder="bio (optional)"
           />
           <CommonSocials
-          user={user} handleChange={handleChange} showSocialLinks={showSocialLinks} setShowSocialLinks={setShowSocialLinks}
+            user={user}
+            handleChange={handleChange}
+            showSocialLinks={showSocialLinks}
+            setShowSocialLinks={setShowSocialLinks}
           />
-          <Button 
-          icon="signup"
-          content = "Sign Up"
-          type = "submit"
-          color = "green"
-          disabled = {submitDisabled || !userNameAvaiable}
+          <Button
+            icon="signup"
+            content="Sign Up"
+            type="submit"
+            color="green"
+            disabled={submitDisabled || !userNameAvaiable}
           />
         </Segment>
       </Form>

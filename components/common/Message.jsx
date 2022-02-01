@@ -14,7 +14,7 @@ export const HeaderMessage = () => {
       //   setHideMessage(true)
       // }}
       color="green"
-      icon="settings"
+      icon={isSignup ? "settings" : "privacy"}
       header={isSignup ? "get started here" : "welcome back"}
       content={
         isSignup ? "create new account" : "login with email and password"
