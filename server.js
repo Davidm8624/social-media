@@ -1,7 +1,7 @@
 const app = require("express")();
 const express = require("express");
 const next = require("next");
-const { connectDB } = require("./DB/connect");
+const { connectDB } = require("./server/util/connect");
 require('dotenv').config()
 
 //create a check for dev vs production
@@ -15,10 +15,19 @@ const nextApp = next({ dev });
 //this is a built in next router that will handle All the request made to the server
 const handler = nextApp.getRequestHandler();
 
+
+//routers
+
+const signupRoute = require('./pages/api/v1/signup')
+
 app.use(express.json());
 connectDB();
 
 nextApp.prepare().then(() => {
+
+  //routing
+  app.use('/api/v1/signup/:username', signupRoute)
+
   app.all("*", (req, res) => handler(req, res));
   app.listen(PORT, (err) => {
     if(err){

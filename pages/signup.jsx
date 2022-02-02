@@ -10,6 +10,8 @@ import {
 import { HeaderMessage, FooterMessage } from "../components/common/Message";
 import CommonSocials from "../components/common/CommonSocials";
 import DragNDrop from "../components/common/DragNDrop";
+import axios from "axios";
+import usernameRegex from '../util/usernameRegex'
 
 const signup = () => {
   const [user, setUser] = useState({
@@ -22,7 +24,6 @@ const signup = () => {
     instagram: "",
     facebook: "",
   });
-  const userNameRegex = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/gim;
   const { name, email, password, bio } = user; //destructures so we dont have to use user.name etc
   //form states:
   const [formLoading, setFormLoading] = useState(false);
@@ -30,7 +31,7 @@ const signup = () => {
   const [submitDisabled, setSumbitDisabled] = useState(true);
   const inputRef = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [userNameLoading, setUsernameLoading] = useState(false);
+  const [userNameLoading, setUserNameLoading] = useState(false);
   const [userNameAvaiable, setUserNameAvaiable] = useState(false);
   const [userName, setUserName] = useState("");
   const [showSocialLinks, setShowSocialLinks] = useState(false);
@@ -51,15 +52,27 @@ const signup = () => {
     }));
   };
 
-  useEffect(() => {
-    // const isUser = Object.values({name, email, password}).every(
-    //   (item) => {
-    //     Boolean(item)
-    //   }
-    // )
+  const checkUsername = async () => {
+    setUserNameLoading(true);
+    try {
+      const res = await axios.get(`/api/v1/signup/${userName}`);
+      if (res.data === "Available") {
+        setUserNameAvaiable(true);
+        setUser((prev) => ({ ...(prev / userName) }));
+      }
+    } catch (error) {
+      setErrorMessage("username is not aviable");
+    }
+    setUserNameLoading(false);
+  };
 
+  useEffect(() => {
     setSumbitDisabled(!(name && email && password && userName)); //
   }, [user, userName]);
+
+  useEffect(()=>{
+    userName === "" ? setUserNameAvaiable(false) : checkUsername()
+  },[userName])
 
   return (
     <>
@@ -139,8 +152,8 @@ const signup = () => {
             iconPosition="left"
             onChange={(e) => {
               setUserName(e.target.value);
-              const test = userNameRegex.test(e.target.value);
-              if (test || userNameRegex.test(e.target.value)) {
+              const test = usernameRegex.test(e.target.value);
+              if (test || usernameRegex.test(e.target.value)) {
                 setUserNameAvaiable(true);
               } else {
                 setUserNameAvaiable(false);
