@@ -1,6 +1,6 @@
 // import React from 'react';
 // import { Container } from "semantic-ui-react";
-import { HeaderMessage, FooterMessage } from "../components/common/Message";
+import { HeaderMessage, FooterMessage } from "./components/common/Message";
 import { useState, useRef, useEffect } from "react";
 import {
   Container,

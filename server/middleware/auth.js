@@ -17,7 +17,7 @@ modeule.exports = (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    req.user = {userId};
+    req.user = { userId };
     next();
   } catch (error) {
     console.log(err);

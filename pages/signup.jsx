@@ -7,11 +7,11 @@ import {
   TextArea,
   Button,
 } from "semantic-ui-react";
-import { HeaderMessage, FooterMessage } from "../components/common/Message";
-import CommonSocials from "../components/common/CommonSocials";
-import DragNDrop from "../components/common/DragNDrop";
+import { HeaderMessage, FooterMessage } from "./components/common/Message";
+import CommonSocials from "./components/common/CommonSocials";
+import DragNDrop from "./components/common/DragNDrop";
 import axios from "axios";
-import usernameRegex from '../util/usernameRegex'
+let cancel;
 
 const signup = () => {
   const [user, setUser] = useState({
@@ -42,20 +42,40 @@ const signup = () => {
   //functions
   const handleSubmit = (e) => {
     e.preventDefault();
+    setFormLoading(true);
+
+    let profilePicURL;
+    if (media !== null) {
+    }
+
+    setFormLoading(false);
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUser((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const { name, value, files } = e.target;
+
+    if (name === "media" && files.length) {
+      setMedia(() => files[0]);
+      setMediaPreview(() => URL.createObjectURL(files[0]));
+    } else {
+      setUser((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const checkUsername = async () => {
+    const cancelToken = axios.CancelToken;
+
     setUserNameLoading(true);
     try {
-      const res = await axios.get(`/api/v1/signup/${userName}`);
+      cancel && cancel();
+      const res = await axios.get(`/api/v1/signup/${userName}`, {
+        cancelToken: new cancelToken((canceler) => {
+          cancel = canceler;
+        }),
+      });
       if (res.data === "Available") {
         setUserNameAvaiable(true);
         setUser((prev) => ({ ...(prev / userName) }));
@@ -70,9 +90,9 @@ const signup = () => {
     setSumbitDisabled(!(name && email && password && userName)); //
   }, [user, userName]);
 
-  useEffect(()=>{
-    userName === "" ? setUserNameAvaiable(false) : checkUsername()
-  },[userName])
+  useEffect(() => {
+    userName === "" ? setUserNameAvaiable(false) : checkUsername();
+  }, [userName]);
 
   return (
     <>
@@ -152,12 +172,6 @@ const signup = () => {
             iconPosition="left"
             onChange={(e) => {
               setUserName(e.target.value);
-              const test = usernameRegex.test(e.target.value);
-              if (test || usernameRegex.test(e.target.value)) {
-                setUserNameAvaiable(true);
-              } else {
-                setUserNameAvaiable(false);
-              }
             }}
           />
           <Divider></Divider>

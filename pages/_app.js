@@ -1,4 +1,4 @@
-import Layout from "../components/layout/Layout";
+import Layout from "../pages/components/layout/Layout";
 import "../styles/globals.css";
 import 'semantic-ui-css/semantic.min.css';
 

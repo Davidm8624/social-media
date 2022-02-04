@@ -1,12 +1,12 @@
-const UserModel = require("../../../server/models/UserModel");
+const UserModel = require("../models/UserModel");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bycrypt");
+const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail");
-const res = require("express/lib/response");
+// const res = require("express/lib/response");
 
-const authRoute = async (req, res) => {
-  if (req.method === "POST") {
-    const { email, password } = req.body.UserModel;
+const postLoginUser = async (req, res) => {
+
+    const { email, password } = req.body.user;
     if (!isEmail(email)) return res.status(401).send("invalid email");
     if (password.length < 6)
       return res.status(401).send("password needs to be atleast 6 long");
@@ -16,7 +16,7 @@ const authRoute = async (req, res) => {
         email: email.toLowerCase(),
       }).select("+password");
       if (!user) return res.status(401).send("invalid credentials");
-      const isPassword = await bcyrpy.compare(password, user.password);
+      const isPassword = await bcrypt.compare(password, user.password);
       if (!isPassword) return res.status(401).send("invalid credentials");
       const payload = { userID: user._id };
 
@@ -33,8 +33,8 @@ const authRoute = async (req, res) => {
       console.log(error);
       return res.status(500).senf("server error");
     }
-  }
+  
 };
 
 
-module.exports = authRoute
+module.exports = {postLoginUser}
