@@ -57,6 +57,7 @@ const signup = () => {
     if (name === "media" && files.length) {
       setMedia(() => files[0]);
       setMediaPreview(() => URL.createObjectURL(files[0]));
+      setHighLighted(true)
     } else {
       setUser((prev) => ({
         ...prev,
@@ -71,17 +72,22 @@ const signup = () => {
     setUserNameLoading(true);
     try {
       cancel && cancel();
-      const res = await axios.get(`/api/v1/signup/${userName}`, {
+      const res = await axios.get(`/api/v1/user/${userName}`
+      , {
         cancelToken: new cancelToken((canceler) => {
           cancel = canceler;
         }),
-      });
+      }
+      );
       if (res.data === "Available") {
         setUserNameAvaiable(true);
+        setErrorMessage(null)
         setUser((prev) => ({ ...(prev / userName) }));
       }
     } catch (error) {
       setErrorMessage("username is not aviable");
+      setUserNameAvaiable(false)
+      console.log(error);
     }
     setUserNameLoading(false);
   };

@@ -20,7 +20,7 @@ const getUsernameAvailable = async (req, res) => {
       username: username.toLowerCase(),
     });
     if (user) return res.status(401).send("username already taken");
-    return res.status(200).send("Avilable");
+    return res.status(200).send("Available");
   } catch (error) {
     console.log(error);
     res.status(500).send("there was a server error");

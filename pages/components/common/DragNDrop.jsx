@@ -45,7 +45,11 @@ const DragNDrop = ({
           >
             {mediaPreview === null ? (
               <>
-                <Segment placeholder basic>
+                <Segment
+                  {...(highLighted && { color: "green" })}
+                  placeholder
+                  basic
+                >
                   <Header icon>
                     <Icon name="file image outline" />
                     Drag N Drop image here to upload
