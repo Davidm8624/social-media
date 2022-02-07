@@ -59,7 +59,7 @@ const login = () => {
           <Form.Input
             required
             label="Email"
-            placeHolder="Email"
+            placeholder="Email"
             name="email"
             value={email}
             onChange={handleChange}
