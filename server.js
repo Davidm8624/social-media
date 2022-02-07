@@ -36,7 +36,7 @@ const authRoute = require("./server/routes/authRoutes");
 const uploadRoute = require("./server/routes/uploadPicRoute");
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/upload", uploadRoute);
+app.use("/api/v1/uploads", uploadRoute);
 
 connectDB();
 

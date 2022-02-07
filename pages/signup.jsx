@@ -11,6 +11,9 @@ import { HeaderMessage, FooterMessage } from "./components/common/Message";
 import CommonSocials from "./components/common/CommonSocials";
 import DragNDrop from "./components/common/DragNDrop";
 import axios from "axios";
+import catchErrors from "./util/catchErrors";
+import { setToken } from "./util/auth";
+
 let cancel;
 
 const signup = () => {
@@ -40,12 +43,39 @@ const signup = () => {
   const [mediaPreview, setMediaPreview] = useState(null);
 
   //functions
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setFormLoading(true);
 
     let profilePicURL;
     if (media !== null) {
+      const formData = new FormData();
+      formData.append("image", media, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const res = await axios.post("/api/v1/uploads", formData);
+      profilePicURL = res.data.src;
+    }
+
+    if (media !== null && !profilePicURL) {
+      setFormLoading(false);
+      return res.status(500).send("image upload error");
+    }
+
+    try {
+      console.log('1');
+      const res = await axios.post("/api/v1/user/signup", {
+        user,
+        profilePicURL,
+      });
+      console.log('2');
+      setToken(res.data);
+      console.log('3');
+    } catch (error) {
+      const errorMsg = catchErrors(error);
+      setErrorMessage(errorMsg);
     }
 
     setFormLoading(false);
@@ -57,7 +87,7 @@ const signup = () => {
     if (name === "media" && files.length) {
       setMedia(() => files[0]);
       setMediaPreview(() => URL.createObjectURL(files[0]));
-      setHighLighted(true)
+      setHighLighted(true);
     } else {
       setUser((prev) => ({
         ...prev,
@@ -72,21 +102,19 @@ const signup = () => {
     setUserNameLoading(true);
     try {
       cancel && cancel();
-      const res = await axios.get(`/api/v1/user/${userName}`
-      , {
+      const res = await axios.get(`/api/v1/user/${userName}`, {
         cancelToken: new cancelToken((canceler) => {
           cancel = canceler;
         }),
-      }
-      );
+      });
       if (res.data === "Available") {
         setUserNameAvaiable(true);
-        setErrorMessage(null)
-        setUser((prev) => ({ ...(prev / userName) }));
+        setErrorMessage(null);
+        setUser((prev) => ({ ...prev, userName}));
       }
     } catch (error) {
       setErrorMessage("username is not aviable");
-      setUserNameAvaiable(false)
+      setUserNameAvaiable(false);
       console.log(error);
     }
     setUserNameLoading(false);

@@ -1,4 +1,4 @@
-const router = require('express').Router()
-const {postLoginUser} = require('../controllers/auth')
-router.route('/').post(postLoginUser)
-module.exports = router
+const router = require("express").Router();
+const {} = require("../controllers/auth");
+router.route("/");
+module.exports = router;

@@ -12,6 +12,9 @@ import {
   Message,
   formLoading,
 } from "semantic-ui-react";
+import catchErrors from "./util/catchErrors";
+import axios from "axios";
+import { setToken } from "./util/auth";
 
 const login = () => {
   const [user, setUser] = useState({
@@ -32,9 +35,22 @@ const login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("somthing went wrong");
+
+    setFormLoading(true)
+
+    try {
+      const res = await axios.post('/api/v1/user/login', {user})
+      setToken(res.data)
+    } catch (error) {
+      console.log(error);
+      const errorMsg = catchErrors(error)
+      setErrorMsg(errorMsg)
+    }
+
+    setFormLoading(false)
   };
 
   useEffect(() => {
