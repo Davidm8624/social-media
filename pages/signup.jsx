@@ -6,6 +6,7 @@ import {
   Segment,
   TextArea,
   Button,
+  Message,
 } from "semantic-ui-react";
 import { HeaderMessage, FooterMessage } from "./components/common/Message";
 import CommonSocials from "./components/common/CommonSocials";
@@ -13,6 +14,8 @@ import DragNDrop from "./components/common/DragNDrop";
 import axios from "axios";
 import catchErrors from "./util/catchErrors";
 import { setToken } from "./util/auth";
+
+
 
 let cancel;
 
@@ -137,7 +140,6 @@ const signup = () => {
         onSubmit={handleSubmit}
       >
         <Segment>
-          {/* drag and drop here */}
           <DragNDrop
             inputRef={inputRef}
             handleChange={handleChange}
@@ -147,7 +149,9 @@ const signup = () => {
             setMediaPreview={setMediaPreview}
             highLighted={highLighted}
             setHighLighted={setHighLighted}
-          />
+            />
+            {/* drag and drop here */}
+          <Message error content={errorMessage} header="oops!" icon={'meh'}/>
           <Form.Input
             required
             label="Name"

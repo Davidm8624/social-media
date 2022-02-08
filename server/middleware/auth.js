@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-modeule.exports = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
   try {
     if ((!req, headers.authorization)) {
       return res.status(401).send("unauthorized");
@@ -17,10 +17,12 @@ modeule.exports = (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    req.user = { userId };
+    req.userId =  userId ;
     next();
   } catch (error) {
     console.log(err);
     return res.status(401).send("unauthorized");
   }
 };
+
+module.exports = {authMiddleware}
