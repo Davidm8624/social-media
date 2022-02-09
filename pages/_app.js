@@ -2,7 +2,7 @@ import Layout from "../pages/components/layout/Layout";
 import "../styles/globals.css";
 import "semantic-ui-css/semantic.min.css";
 import { destroyCookie, parseCookies } from "nookies";
-import { redirect } from "next/dist/server/api-utils";
+// import { redirect } from "next/dist/server/api-utils";
 import { baseURL, redirectUser } from "./util/auth";
 import axios from "axios";
 
@@ -30,10 +30,11 @@ function MyApp({ Component, pageProps }) {
       if (Component.getInitialProps) {
         pageProps = await Component.getInitialProps(ctx);
       }
+      // console.log(`${baseURL}/api/v1/auth`);
       try {
         const res = await axios.get(`${baseURL}/api/v1/auth`, {
           headers: {
-            Authorization: `Bearer ${token},`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -42,6 +43,7 @@ function MyApp({ Component, pageProps }) {
         pageProps.user = user;
         pageProps.followStats = followStats;
       } catch (error) {
+        console.log(error);
         destroyCookie(ctx, 'token')
         redirectUser(ctx, '/login')
       }

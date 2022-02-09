@@ -106,7 +106,7 @@ const postLoginUser = async (req, res) => {
     if (!user) return res.status(401).send("invalid credentials");
     const isPassword = await bcrypt.compare(password, user.password);
     if (!isPassword) return res.status(401).send("invalid credentials");
-    const payload = { userID: user._id };
+    const payload = { userId: user._id };
 
     jwt.sign(
       payload,

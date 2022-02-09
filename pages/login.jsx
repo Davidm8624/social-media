@@ -37,7 +37,7 @@ const login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg("somthing went wrong");
+    // setErrorMsg("somthing went wrong");
 
     setFormLoading(true)
 
@@ -68,7 +68,7 @@ const login = () => {
         <Message
           error
           header="oops"
-          content={errorMsg}
+          // content={errorMsg}
           onDismiss={() => setErrorMsg(null)}
         />
         <Segment>

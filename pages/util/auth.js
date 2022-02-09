@@ -1,7 +1,7 @@
 import cookie from "js-cookie";
 import Router from "next/router";
 
-export const baseURL = `http://localhost:3000:${process.env.PORT || 3000}`
+export const baseURL = `http://localhost:${process.env.PORT || 3000}`
 
 export const setToken = (token) => {
   cookie.set("token", token);

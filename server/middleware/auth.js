@@ -2,27 +2,25 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
   try {
-    if ((!req, headers.authorization)) {
+    console.log('userId');
+    if ((!req.headers.authorization)) {
       return res.status(401).send("unauthorized");
     }
-    if ((!req, headers.authorization.split(" ")[0] !== "Bearer")) {
+    if ((req.headers.authorization.split(" ")[0] !== "Bearer")) {
       return res.status(401).send("unauthorized");
     }
 
     const auth = req.headers.authorization.split(" ")[1];
 
-    const { userId } = jwt.verify(
-      req,
-      headers.authorization,
-      process.env.JWT_SECRET
-    );
+    const { userId } = jwt.verify(auth, process.env.JWT_SECRET);
 
-    req.userId =  userId ;
+    req.userId = userId;
+    console.log(userId);
     next();
   } catch (error) {
-    console.log(err);
+    console.error(error);
     return res.status(401).send("unauthorized");
   }
 };
 
-module.exports = {authMiddleware}
+module.exports = { authMiddleware };
