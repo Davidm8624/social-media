@@ -10,8 +10,7 @@ function MyApp({ Component, pageProps }) {
   // const { Component, pageProps} = AppContext    junkkkkk
   // // console.log(AppContext);
   return (
-    <Layout>
-      {" "}
+    <Layout user={pageProps.user}>
       <Component {...pageProps} />
     </Layout>
   );

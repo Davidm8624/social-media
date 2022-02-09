@@ -15,6 +15,7 @@ import {
 import catchErrors from "./util/catchErrors";
 import axios from "axios";
 import { setToken } from "./util/auth";
+import Cookies from "js-cookie";
 
 const login = () => {
   const [user, setUser] = useState({
@@ -56,6 +57,12 @@ const login = () => {
   useEffect(() => {
     setSubmitDisabled(!(email && password));
   }, [user]);
+
+  useEffect(() => {
+    document.title = 'welcome back!'
+    const userEmail = Cookies.get('userEmaill')
+    if(userEmail) setUser((prev) => ({...prev, email: userEmail}))
+  }, [])
 
   return (
     <>
