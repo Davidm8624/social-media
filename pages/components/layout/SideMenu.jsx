@@ -9,10 +9,11 @@ const SideMenu = ({
   return (
     <>
       <List>
+        
         <List.Item onClick={() => logoutUser(email)}>
-          <Icon name="home" size="large" />
+          <Icon name="logout" size="large" />
           <List.Content>
-            <List.Header content="home" />
+            <List.Header content="logout" />
           </List.Content>
         </List.Item>
       </List>
