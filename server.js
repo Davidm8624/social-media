@@ -37,6 +37,7 @@ const authRoute = require("./server/routes/authRoutes");
 const searchRoute = require("./server/routes/search");
 const uploadRoute = require("./server/routes/uploadPicRoute");
 const postsRoute = require("./server/routes/postsRoute");
+
 app.use("/api/v1/posts", authMiddleware, postsRoute);
 app.use("/api/v1/search", searchRoute);
 app.use("/api/v1/user", userRoute);
