@@ -1,17 +1,34 @@
 import axios from "axios";
 import { Divider } from "semantic-ui-react";
 import { parseCookies } from "nookies";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { baseURL } from "./util/auth";
 
-const index = ({user}) => {
+const index = ({ user, postData, errorLoading }) => {
+  const [posts, setPosts] = useState(postData)
+  const [showToastr, setShowToastr] = useState(false)
   //useeffects``````````````````````~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   useEffect(() => {
-    document.title = `welcome, ${user.name.split(' ')[0]}`
+    document.title = `welcome, ${user.name.split(" ")[0]}`;
   }, []);
 
   return <>home page</>;
 };
 
+index.getInitialProps = async (ctx) => {
+  try {
+    const { token } = parseCookies(ctx);
+    const res = await axios.get(`${baseURL}/api/v1/posts`, {
+      headers: {
+        Authorization: `Bearer ${token}`,                 
+      },
+    });
+    return { postData: res.data };
+  } catch (error) {
+    console.log(error);
+    return { errorLoading: true };
+  }
+};
 // const index = ({ posts, token }) => {
 //   return (
 //     <>
