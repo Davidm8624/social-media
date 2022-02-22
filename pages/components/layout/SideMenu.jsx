@@ -11,7 +11,7 @@ const SideMenu = ({
   return (
     <>
       <List
-        style={{ marginTop: "2rem" }}
+        // style={{ marginTop: "1rem" }}
         size="big"
         verticalAlign="middle"
         selection

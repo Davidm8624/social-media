@@ -1,8 +1,11 @@
 import axios from "axios";
-import { Divider } from "semantic-ui-react";
+import { Card, Divider, Segment } from "semantic-ui-react";
 import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { baseURL } from "./util/auth";
+import { NoPost } from "./components/layout/NoData";
+import CreatePost from './components/post/CreatePost'
+import CardPost from './components/post/CardPost'
 
 const index = ({ user, postData, errorLoading }) => {
   const [posts, setPosts] = useState(postData)
@@ -12,7 +15,30 @@ const index = ({ user, postData, errorLoading }) => {
     document.title = `welcome, ${user.name.split(" ")[0]}`;
   }, []);
 
-  return <>home page</>;
+  useEffect(() => {
+    showToastr && setTimeout(() => setShowToastr(false), 3000)
+  
+  }, [showToastr])
+  
+  if(!posts || errorLoading) return <noPosts/>
+
+  return (
+    <>
+    {/* show toastr stuff */}
+    <Segment>
+      <CreatePost user={user} setPosts={setPosts} />
+      {posts.map((post) => (
+        <CardPost 
+        key={post._id}
+        post = {post}
+        user = {user}
+        setPosts = {setPosts}
+        setShowToastr={setShowToastr}
+        />
+      ) )}
+    </Segment>
+    </>
+  );
 };
 
 index.getInitialProps = async (ctx) => {
