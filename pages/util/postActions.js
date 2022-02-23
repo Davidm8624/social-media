@@ -21,7 +21,7 @@ export const deletePost = async (postId, setPost, setShowToastr) => {
 export const likePost = async (postId, userId, setLikes, like = true) => {
   try {
     if (like) {
-      await postAxios.post(`/likes.${postId}`);
+      await postAxios.post(`/likes/${postId}`);
       setLikes((prev) => [...prev, { user: userId }]);
     } else {
       await postAxios.put(`/likes/${postId}`);
