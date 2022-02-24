@@ -31,3 +31,28 @@ export const likePost = async (postId, userId, setLikes, like = true) => {
     console.log(error);
   }
 };
+
+export const postComment = async (postId, user, text, setComments, setText) => {
+  try {
+    const res = await postAxios.post(`/comments/${postId}`, { text });
+    const newComments = {
+      _id: res.data,
+      user,
+      text,
+      date: Date.now(),
+    };
+    setComments((prev) => [newComments, ...prev]);
+    setText("");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteComments = async (postId, commentId, setComments) => {
+  try {
+    await postAxios.delete(`/comments/${postId}/${commentId}`);
+    setComments((prev) => prev.filter((comment) => comment._id !== commentId));
+  } catch (error) {
+    console.log(error);
+  }
+};
