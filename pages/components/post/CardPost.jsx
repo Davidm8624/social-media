@@ -143,9 +143,12 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                 onClick={() => setShowModal(true)}
               />
             )}
+            <Divider hidden/>
+            <CommentInputField user={user} postId={post._id} setComments={setComments} />
           </Card.Content>
         </Card>
       </Segment>
+      <Divider hidden/>
     </>
   );
 };

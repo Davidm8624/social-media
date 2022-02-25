@@ -2,6 +2,7 @@ import axios from "axios";
 import { baseURL } from "./auth";
 import Cookies from "js-cookie";
 import catchErros from "./catchErrors";
+import catchErrors from "./catchErrors";
 
 const postAxios = axios.create({
   baseURL: `${baseURL}/api/v1/posts`,
@@ -54,5 +55,23 @@ export const deleteComments = async (postId, commentId, setComments) => {
     setComments((prev) => prev.filter((comment) => comment._id !== commentId));
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const addPost = async (
+  text,
+  loaction,
+  picUrl,
+  setPosts,
+  setNewPost,
+  setError
+) => {
+  try {
+    await postAxios.post("/", { text, location, picUrl });
+    setPosts((prev) => [res.data, ...prev]);
+    setNewPost({ text: "", location: "" });
+  } catch (error) {
+    console.log(error);
+    setError(catchErrors(error));
   }
 };

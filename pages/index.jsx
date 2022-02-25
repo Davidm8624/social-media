@@ -4,39 +4,40 @@ import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { baseURL } from "./util/auth";
 import { NoPost } from "./components/layout/NoData";
-import CreatePost from './components/post/CreatePost'
-import CardPost from './components/post/CardPost'
+import CreatePost from "./components/post/CreatePost";
+import CardPost from "./components/post/CardPost";
 
 const index = ({ user, postData, errorLoading }) => {
-  const [posts, setPosts] = useState(postData)
-  const [showToastr, setShowToastr] = useState(false)
+  const [posts, setPosts] = useState(postData);
+  const [showToastr, setShowToastr] = useState(false);
   //useeffects``````````````````````~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   useEffect(() => {
     document.title = `welcome, ${user.name.split(" ")[0]}`;
   }, []);
 
   useEffect(() => {
-    showToastr && setTimeout(() => setShowToastr(false), 3000)
-  
-  }, [showToastr])
-  
-  if(!posts || errorLoading) return <noPosts/>
+    showToastr && setTimeout(() => setShowToastr(false), 3000);
+  }, [showToastr]);
 
   return (
     <>
-    {/* show toastr stuff */}
-    <Segment>
-      <CreatePost user={user} setPosts={setPosts} />
-      {posts.map((post) => (
-        <CardPost 
-        key={post._id}
-        post = {post}
-        user = {user}
-        setPosts = {setPosts}
-        setShowToastr={setShowToastr}
-        />
-      ) )}
-    </Segment>
+      {/* show toastr stuff */}
+      <Segment>
+        <CreatePost user={user} setPosts={setPosts} />
+        {!posts || errorLoading ? (
+          <noPosts />
+        ) : (
+          posts.map((post) => (
+            <CardPost
+              key={post._id}
+              post={post}
+              user={user}
+              setPosts={setPosts}
+              setShowToastr={setShowToastr}
+            />
+          ))
+        )}
+      </Segment>
     </>
   );
 };
@@ -46,7 +47,7 @@ index.getInitialProps = async (ctx) => {
     const { token } = parseCookies(ctx);
     const res = await axios.get(`${baseURL}/api/v1/posts`, {
       headers: {
-        Authorization: `Bearer ${token}`,                 
+        Authorization: `Bearer ${token}`,
       },
     });
     return { postData: res.data };
