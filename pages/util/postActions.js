@@ -60,14 +60,14 @@ export const deleteComments = async (postId, commentId, setComments) => {
 
 export const addPost = async (
   text,
-  loaction,
+  location,
   picUrl,
   setPosts,
   setNewPost,
   setError
 ) => {
   try {
-    await postAxios.post("/", { text, location, picUrl });
+    const res = await postAxios.post("/", { text, location, picUrl });
     setPosts((prev) => [res.data, ...prev]);
     setNewPost({ text: "", location: "" });
   } catch (error) {

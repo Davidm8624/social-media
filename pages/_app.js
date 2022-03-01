@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }) {
     const { token } = parseCookies(ctx);
     let pageProps = {};
 
-    const protectedRoutes = ["/"]; //will be added to in the future
+    const protectedRoutes = ["/",'/[username]']; //will be added to in the future
 
     const isProtectedRoute = protectedRoutes.includes(ctx.pathname);
 

@@ -74,7 +74,7 @@ const createUser = async (req, res) => {
       user: user._id,
       followers: [],
       following: [],
-    }).save;
+    }).save();
 
     const payload = { userID: user._id };
     jwt.sign(

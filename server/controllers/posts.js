@@ -17,10 +17,15 @@ const createPost = async (req, res) => {
       user: req.userId,
       text,
     };
+    console.log('1');
     if (location) newPost.location = location;
+    console.log('2');
     if (picUrl) newPost.picUrl = picUrl;
+    console.log(newPost);
     const post = await new PostModel(newPost).save();
+    console.log('4');
     const postCreated = await PostModel.findById(post._id).populate("user");
+    console.log('5');
     return res.status(200).json(postCreated);
   } catch (error) {
     console.log(error);
