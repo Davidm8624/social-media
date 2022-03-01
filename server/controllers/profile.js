@@ -17,7 +17,7 @@ const getProfile = async (req, res) => {
     const profileFollowStats = await FollowerModel.findOne({ user: user._id });
     // console.log(profileFollowStats);
 
-    console.log(user, profile, profileFollowStats);
+    // console.log(user, profile, profileFollowStats);
     return res.status(200).json({
       profile,
       followersLength:
@@ -37,6 +37,20 @@ const getProfile = async (req, res) => {
 
 const getUserPosts = async (req, res) => {
   try {
+    const { username } = req.params;
+    const user = await UserModel.findOne({ username: username.toLowerCase() });
+    if (!user) {
+      return res.status(404).send("user not found");
+    }
+
+    const post = await PostModel.find({ user: user._id })
+      .sort({
+        createdAt: -1,
+      })
+      .populate("user")
+      .populate("comments.user");
+
+    return res.status(200).json(post);
   } catch (error) {
     console.log(error);
     return res.status(500).send("error at getuser posts");
@@ -45,6 +59,11 @@ const getUserPosts = async (req, res) => {
 
 const getFollowers = async (req, res) => {
   try {
+    const { userId } = req.params;
+    const user = await FollowerModel.findOne({ user: userId }).populate(
+      "followers.user"
+    );
+    return res.status(200).json(user.followers);
   } catch (error) {
     console.log(error);
     return res.status(500).send("error at get followers");
@@ -53,6 +72,11 @@ const getFollowers = async (req, res) => {
 
 const getFollowing = async (req, res) => {
   try {
+    const { userId } = req.params;
+    const user = await FollowerModel.findOne({ user: userId }).populate(
+      "following.user"
+    );
+    return res.status(200).json(user.following);
   } catch (error) {
     console.log(error);
     return res.status(500).send("error at get folling");

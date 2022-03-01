@@ -3,7 +3,7 @@ const UserModel = require("../models/UserModel");
 const FollowerModel = require('../models/FollowerModel')
 
 const getUserAuth = async (req,res) => {
-  console.log('wasup');
+  // console.log('wasup');
   const {userId} = req
   if(!userId) return res.status(500).send('no user found')
 
