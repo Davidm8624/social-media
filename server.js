@@ -39,11 +39,11 @@ const uploadRoute = require("./server/routes/uploadPicRoute");
 const postsRoute = require("./server/routes/postsRoute");
 const profileRoute = require("./server/routes/profile");
 
-app.use("/api/v1/posts", authMiddleware, postsRoute);
 app.use("/api/v1/search", searchRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/uploads", uploadRoute);
+app.use("/api/v1/posts", authMiddleware, postsRoute);
 app.use("/api/v1/profile", authMiddleware, profileRoute);
 
 connectDB();

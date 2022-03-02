@@ -7,6 +7,7 @@ import { Grid } from "semantic-ui-react";
 import Cookies from "js-cookie";
 import CardPost from "./components/post/CardPost";
 import ProfileMenuTabs from "./components/profile/ProfileMenuTabs";
+import ProfileHeader from "./components/profile/ProfileHeader";
 
 const ProfilePage = ({
   errorLoading,
@@ -56,6 +57,20 @@ const ProfilePage = ({
             ownAccount={ownAccount}
             loggedUserFollowStats={loggedUserFollowStats}
           />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column>
+          {activeItem === "profile" && (
+            <>
+              <ProfileHeader
+                profile={profile}
+                ownAccount={ownAccount}
+                loggedUserFollowStats={loggedUserFollowStats}
+                setLoggedUserFollowStats={setLoggedUserFollowStats}
+              />
+            </>
+          )}
         </Grid.Column>
       </Grid.Row>
     </Grid>
