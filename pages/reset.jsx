@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 const reset = () => {
-  return <div>reset page</div>;
+  return <div>Reset Page</div>;
 };
 
 export default reset;

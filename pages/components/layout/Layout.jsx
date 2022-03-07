@@ -1,6 +1,6 @@
+import { Container, Grid, Ref, Sticky, Visibility } from "semantic-ui-react";
 import HeadTag from "./HeadTag";
 import Navbar from "./navbar";
-import { Container, Grid, Ref, Sticky, Visibility } from "semantic-ui-react";
 import nprogress from "nprogress";
 import Router from "next/router";
 import { createRef } from "react";
@@ -12,7 +12,8 @@ const Layout = ({ children, user }) => {
   Router.onRouteChangeComplete = () => nprogress.done();
   Router.onRouteChangeError = () => nprogress.done();
 
-  //create ref refreshes on renders while useref refreshes on page/router.reload() refresh
+  //createRef refreshes on render()
+  //userRef refreshes on router.reload() page refreh
   const contextRef = createRef();
 
   return (
@@ -20,7 +21,13 @@ const Layout = ({ children, user }) => {
       <HeadTag />
       {user ? (
         <>
-          <div style={{ marginLeft: "1rem", marginRight: "1rem" }}>
+          <div
+            style={{
+              marginLeft: "1rem",
+              marginRight: "1rem",
+              // marginTop: "2rem",
+            }}
+          >
             <Ref innerRef={contextRef}>
               <Grid>
                 <Grid.Column width={2}>
@@ -28,9 +35,11 @@ const Layout = ({ children, user }) => {
                     <SideMenu user={user} />
                   </Sticky>
                 </Grid.Column>
+
                 <Grid.Column width={10}>
                   <Visibility context={contextRef}>{children}</Visibility>
                 </Grid.Column>
+
                 <Grid.Column width={3}>
                   <Sticky context={contextRef}>
                     <SearchComponent />

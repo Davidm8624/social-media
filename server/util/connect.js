@@ -4,11 +4,11 @@ const connectDB = async () => {
   try {
     await mongoose
       .connect(process.env.MONGO_URI)
-      .then(console.log("connected to db"));
-  } catch (error) {
-    console.log(error);
+      .then(console.log("Connected to DB"));
+  } catch (err) {
+    console.log(err);
     process.exit(1);
   }
 };
 
-module.exports = {connectDB}
+module.exports = { connectDB };

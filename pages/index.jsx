@@ -1,18 +1,20 @@
 import axios from "axios";
-import { Card, Divider, Segment } from "semantic-ui-react";
 import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { baseURL } from "./util/auth";
-import { NoPost } from "./components/layout/NoData";
+import { NoPosts } from "./components/layout/NoData";
+import { Segment } from "semantic-ui-react";
 import CreatePost from "./components/post/CreatePost";
 import CardPost from "./components/post/CardPost";
 
 const index = ({ user, postData, errorLoading }) => {
   const [posts, setPosts] = useState(postData);
   const [showToastr, setShowToastr] = useState(false);
-  //useeffects``````````````````````~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  //*UseEffects ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
   useEffect(() => {
-    document.title = `welcome, ${user.name.split(" ")[0]}`;
+    document.title = `Welcome, ${user.name.split(" ")[0]}`;
   }, []);
 
   useEffect(() => {
@@ -21,11 +23,11 @@ const index = ({ user, postData, errorLoading }) => {
 
   return (
     <>
-      {/* show toastr stuff */}
+      {/* SHOWTOASTR STUFF */}
       <Segment>
         <CreatePost user={user} setPosts={setPosts} />
         {!posts || errorLoading ? (
-          <noPosts />
+          <NoPosts />
         ) : (
           posts.map((post) => (
             <CardPost
@@ -50,22 +52,26 @@ index.getInitialProps = async (ctx) => {
         Authorization: `Bearer ${token}`,
       },
     });
+
     return { postData: res.data };
   } catch (error) {
     console.log(error);
     return { errorLoading: true };
   }
 };
+
+export default index;
+
 // const index = ({ posts, token }) => {
 //   return (
 //     <>
-//     <h1>{token}</h1>
+//       <h1>{token}</h1>
 //       {posts.map((post) => {
 //         return (
 //           <div key={post.id}>
 //             <h1>{post.title}</h1>
 //             <p>{post.body}</p>
-//             <Divider/>
+//             <Divider />
 //           </div>
 //         );
 //       })}
@@ -74,12 +80,8 @@ index.getInitialProps = async (ctx) => {
 // };
 
 // index.getInitialProps = async (ctx) => {
-//   const cookie = parseCookies(ctx)
-//   const res = await axios.get(
-//     "https://jsonplaceholder.typicode.com/posts"
-//   );
+//   const cookie = parseCookies(ctx);
+//   const res = await axios.get("https://jsonplaceholder.typicode.com/posts");
 //   // console.log(ctx);
 //   return { posts: res.data, token: cookie.token };
 // };
-
-export default index;

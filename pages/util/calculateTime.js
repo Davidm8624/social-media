@@ -9,17 +9,17 @@ const calculateTime = (createdAt) => {
   if (diffInHours < 24) {
     return (
       <>
-        today at <Moment format="hh:mm A">{createdAt}</Moment>
+        Today at <Moment format="hh:mm A">{createdAt}</Moment>
       </>
     );
   } else if (diffInHours < 48) {
     return (
       <>
-        yesterday at <Moment format="hh:mm A">{createdAt}</Moment>
+        Yesterday at <Moment format="hh:mm A">{createdAt}</Moment>
       </>
     );
   } else {
-    return <Moment format="DD/MM/YYYY hh:mm A">{createdAt}</Moment>;
+    return <Moment format="MM/DD/YYYY hh:mm A">{createdAt}</Moment>;
   }
 };
 

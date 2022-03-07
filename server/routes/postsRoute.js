@@ -1,6 +1,8 @@
+const router = require("express").Router();
+const { route } = require("next/dist/server/router");
 const {
   createPost,
-  getAllPost,
+  getAllPosts,
   getPostById,
   deletePost,
   likePost,
@@ -10,9 +12,7 @@ const {
   deleteComment,
 } = require("../controllers/posts");
 
-const router = require("express").Router();
-
-router.route("/").post(createPost).get(getAllPost);
+router.route("/").post(createPost).get(getAllPosts);
 router.route("/:postId").get(getPostById).delete(deletePost);
 router.route("/likes/:postId").post(likePost).put(unlikePost).get(getLikes);
 router.route("/comments/:postId").post(createComment);

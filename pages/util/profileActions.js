@@ -12,6 +12,7 @@ const profileAxios = axios.create({
 export const followUser = async (userToFollowId, setLoggedUserFollowStats) => {
   try {
     await profileAxios.post(`/follow/${userToFollowId}`);
+
     setLoggedUserFollowStats((prev) => ({
       ...prev,
       following: [...prev.following, { user: userToFollowId }],
@@ -21,9 +22,12 @@ export const followUser = async (userToFollowId, setLoggedUserFollowStats) => {
   }
 };
 
-export const unfollowUser = async (userToUnfollowId, setLoggedUserFollowStats) => {
+export const unfollowUser = async (
+  userToUnfollowId,
+  setLoggedUserFollowStats
+) => {
   try {
-    await proofileAxios.post(`/unfollow/${userToUnfollowId}`);
+    await profileAxios.post(`/unfollow/${userToUnfollowId}`);
     setLoggedUserFollowStats((prev) => ({
       ...prev,
       following: prev.following.filter(

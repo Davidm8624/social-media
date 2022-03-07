@@ -14,10 +14,10 @@ import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputField";
 import Link from "next/link";
 import LikesList from "./LikesList";
-import ImageModal from "./ImageModel";
+import ImageModal from "./ImageModal";
 import NoImageModal from "./NoImageModal";
-import { deletePost, likePost } from "../../util/postActions";
 import calculateTime from "../../util/calculateTime";
+import { deletePost, likePost } from "../../util/postActions";
 
 const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   const [likes, setLikes] = useState(post.likes);
@@ -30,8 +30,8 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   const addPropsToModal = () => ({
     post,
     user,
-    setLikes,
     likes,
+    setLikes,
     isLiked,
     comments,
     setComments,
@@ -48,7 +48,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
               floated="left"
               wrapped
               ui={false}
-              alt="post image"
+              alt="Post Image"
               onClick={() => setShowModal(true)}
             />
           )}
@@ -74,11 +74,12 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                   }
                 >
                   <Header as={"h4"} content="Are you sure?" />
-                  <p>this action is irreversabel</p>
+                  <p>This action is irreversable!</p>
+
                   <Button
                     color="red"
                     icon="trash"
-                    content="delete"
+                    content="Delete"
                     onClick={() =>
                       deletePost(post._id, setPosts, setShowToastr)
                     }
@@ -86,15 +87,18 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                 </Popup>
               </>
             )}
+
             <Card.Header>
               <Link href={`/${post.user.username}`}>
                 <a>{post.user.name}</a>
               </Link>
             </Card.Header>
+
             <Card.Meta>{calculateTime(post.createdAt)}</Card.Meta>
             {post.location && <Card.Meta content={post.location} />}
+
             <Card.Description
-              style={{ fontSize: "1.5rem", letterSpacing: ".1px" }}
+              style={{ fontSize: "1.5rem", letterSpacing: "0.2px" }}
             >
               {post.text}
             </Card.Description>
@@ -118,7 +122,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
             />
             <Icon
               name="comment outline"
-              style={{ marginLeft: "5px" }}
+              style={{ marginLeft: "7px" }}
               color="blue"
             />
             {comments.length &&
@@ -136,19 +140,23 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
               )}
             {comments.length > 3 && (
               <Button
-                content="view more"
+                content="View More"
                 color="teal"
                 basic
                 circular
                 onClick={() => setShowModal(true)}
               />
             )}
-            <Divider hidden/>
-            <CommentInputField user={user} postId={post._id} setComments={setComments} />
+            <Divider hidden />
+            <CommentInputField
+              user={user}
+              postId={post._id}
+              setComments={setComments}
+            />
           </Card.Content>
         </Card>
       </Segment>
-      <Divider hidden/>
+      <Divider hidden />
     </>
   );
 };

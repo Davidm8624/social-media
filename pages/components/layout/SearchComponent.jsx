@@ -3,8 +3,8 @@ import { useState } from "react";
 import { List, Image, Search } from "semantic-ui-react";
 import Router from "next/router";
 import { baseURL } from "../../util/auth";
-let cancel;
 import cookie from "js-cookie";
+let cancel;
 
 const SearchComponent = () => {
   const [text, setText] = useState("");
@@ -16,12 +16,15 @@ const SearchComponent = () => {
     if (value === " ") return;
     setText(value);
     if (value) {
+      setLoading(true);
       try {
         cancel && cancel();
 
         const token = cookie.get("token");
         const res = await axios.get(`${baseURL}/api/v1/search/${value}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           cancelToken: new axios.CancelToken((canceler) => {
             cancel = canceler;
           }),
@@ -32,9 +35,9 @@ const SearchComponent = () => {
           return setLoading(false);
         }
 
-        setResults(res.data)
+        setResults(res.data);
       } catch (error) {
-        console.log("error searching at search component");
+        console.log("Error Searching @ Seach Component", error);
       }
     }
     setLoading(false);
@@ -42,11 +45,11 @@ const SearchComponent = () => {
 
   return (
     <Search
-      style={{ marginTop: "2rem" }}
+      // style={{ marginTop: "2rem" }}
       loading={loading}
       results={results || null}
       value={text}
-      placeholder="find other users"
+      placeholder="Find other users"
       onBlur={() => {
         results.length > 0 && setResults([]);
         loading && setLoading(false);
@@ -65,9 +68,14 @@ const ResultRenderer = ({ _id, profilePicURL, name }) => {
       <List key={_id}>
         <List.Item>
           <Image
-            style={{ objextFit: "contain", height: "1.5rem", width: "1.5rem" }}
+            style={{
+              objectFit: "contain",
+              height: "1.5rem",
+              width: "1.5rem",
+            }}
             src={profilePicURL}
             alt="Profile Pic"
+            avatar
           />
           <List.Content header={name} as="a" />
         </List.Item>

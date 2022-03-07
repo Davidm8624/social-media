@@ -7,40 +7,42 @@ const ProfileMenuTabs = ({
   followersLength,
   followingLength,
   ownAccount,
-  LoggedUserFollowStats,
+  loggedUserFollowStats,
 }) => {
   return (
-    <Menu pointing secondary>
-      <Menu.Item
-        name="profile"
-        active={activeItem === "profile"}
-        onClick={() => handleItemClick("profile")}
-      />
-      <Menu.Item
-        name={`${followersLength} followers`}
-        active={activeItem === "followers"}
-        onClick={() => handleItemClick("followers")}
-      />
-      <Menu.Item
-        name={`${followingLength} following`}
-        active={activeItem === "following"}
-        onClick={() => handleItemClick("following")}
-      />
-      {ownAccount && (
-        <>
-          <Menu.Item
-            name="Update Profile"
-            active={activeItem === "updateProfile"}
-            onClick={() => handleItemClick("updateProfile")}
-          />
-          <Menu.Item
-            name="Update Settings"
-            active={activeItem === "updateSettings"}
-            onClick={() => handleItemClick("updateSettings")}
-          />
-        </>
-      )}
-    </Menu>
+    <>
+      <Menu pointing secondary>
+        <Menu.Item
+          name="profile"
+          active={activeItem === "profile"}
+          onClick={() => handleItemClick("profile")}
+        />
+        <Menu.Item
+          name={`${followersLength} followers`}
+          active={activeItem === "followers"}
+          onClick={() => handleItemClick("followers")}
+        />
+        <Menu.Item
+          name={`${followingLength} following`}
+          active={activeItem === "following"}
+          onClick={() => handleItemClick("following")}
+        />
+        {ownAccount && (
+          <>
+            <Menu.Item
+              name="Update Profile"
+              active={activeItem === "updateProfile"}
+              onClick={() => handleItemClick("updateProfile")}
+            />
+            <Menu.Item
+              name="Update Settings"
+              active={activeItem === "updateSettings"}
+              onClick={() => handleItemClick("updateSettings")}
+            />
+          </>
+        )}
+      </Menu>
+    </>
   );
 };
 

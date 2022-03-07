@@ -1,23 +1,24 @@
 import { Message, Icon } from "semantic-ui-react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+// import { useState } from "react";
 import Link from "next/link";
 
 export const HeaderMessage = () => {
   const router = useRouter();
   const isSignup = router.pathname === "/signup";
-  const [hideMessage, setHideMessage] = useState(false);
+  // const [hideMessage, setHideMessage] = useState(false);
+
   return (
     <Message
       // hidden={hideMessage}
-      // onDismiss={() => {                         lets you dismiss the message
-      //   setHideMessage(true)
+      // onDismiss={() => {
+      //   setHideMessage(true);
       // }}
-      color="green"
+      color="teal"
       icon={isSignup ? "settings" : "privacy"}
-      header={isSignup ? "get started here" : "welcome back"}
+      header={isSignup ? "Get Started Here" : "Welcome Back"}
       content={
-        isSignup ? "create new account" : "login with email and password"
+        isSignup ? "Create New Account" : "Login with Email and Password"
       }
     />
   );
@@ -32,18 +33,18 @@ export const FooterMessage = () => {
         <>
           <Message warning>
             <Icon name="help" />
-            Existing user ? <Link href="/login">login here!</Link>
+            Existing user ? <Link href="/login">Login Here!</Link>
           </Message>
         </>
       ) : (
         <>
-          <Message attached="top" warning>
+          <Message attached="top" info>
             <Icon name="lock" />
-            <Link href="/reset">forgot password?</Link>
+            <Link href="/reset">Forgot Password?</Link>
           </Message>
           <Message attached="bottom" warning>
             <Icon name="help" />
-            new user ? <Link href="/signup">signup here!</Link>
+            New user ? <Link href="/signup">Signup Here!</Link>
           </Message>
         </>
       )}

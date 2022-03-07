@@ -1,17 +1,6 @@
-// import React from 'react';
-// import { Container } from "semantic-ui-react";
-import { HeaderMessage, FooterMessage } from "./components/common/Message";
+import { FooterMessage, HeaderMessage } from "./components/common/Message";
 import { useState, useRef, useEffect } from "react";
-import {
-  Container,
-  Divider,
-  Form,
-  Segment,
-  TextArea,
-  Button,
-  Message,
-  formLoading,
-} from "semantic-ui-react";
+import { Form, Segment, Message, Divider, Button } from "semantic-ui-react";
 import catchErrors from "./util/catchErrors";
 import axios from "axios";
 import { setToken } from "./util/auth";
@@ -22,47 +11,46 @@ const login = () => {
     email: "",
     password: "",
   });
+
   const { email, password } = user;
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
+  //* Handers ~~~~~~~~~~~~~~~~~~ */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setUser((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setErrorMsg("somthing went wrong");
-
-    setFormLoading(true)
+    setFormLoading(true);
 
     try {
-      const res = await axios.post('/api/v1/user/login', {user})
-      setToken(res.data)
+      const res = await axios.post("/api/v1/user/login", { user });
+      setToken(res.data);
     } catch (error) {
       console.log(error);
-      const errorMsg = catchErrors(error)
-      setErrorMsg(errorMsg)
+      const errorMsg = catchErrors(error);
+      setErrorMsg(errorMsg);
     }
 
-    setFormLoading(false)
+    setFormLoading(false);
   };
+
+  //*useEffects~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
   useEffect(() => {
     setSubmitDisabled(!(email && password));
   }, [user]);
 
   useEffect(() => {
-    document.title = 'welcome back!'
-    const userEmail = Cookies.get('userEmaill')
-    if(userEmail) setUser((prev) => ({...prev, email: userEmail}))
-  }, [])
+    document.title = "Welcome Back!";
+    const userEmail = Cookies.get("userEmail");
+    if (userEmail) setUser((prev) => ({ ...prev, email: userEmail }));
+  }, []);
 
   return (
     <>
@@ -74,8 +62,8 @@ const login = () => {
       >
         <Message
           error
-          header="oops"
-          // content={errorMsg}
+          header="Oops!"
+          content={errorMsg}
           onDismiss={() => setErrorMsg(null)}
         />
         <Segment>
@@ -93,30 +81,28 @@ const login = () => {
           <Form.Input
             required
             label="Password"
-            placeholder="password"
+            placeholder="Password"
             name="password"
             value={password}
             onChange={handleChange}
-            icon={
-              showPassword
-                ? {
-                    name: "eye slash",
-                    circular: true,
-                    link: true,
-                    onClick: () => setShowPassword(!showPassword),
-                  }
-                : {
-                    name: "eye",
-                    circular: true,
-                    link: true,
-                    onClick: () => setShowPassword(!showPassword),
-                  }
-            }
+            icon={{
+              name: showPassword ? "eye slash" : "eye",
+              // color: "red",
+              circular: true,
+              link: true,
+              onClick: () => setShowPassword(!showPassword),
+            }}
             iconPosition="left"
             type={showPassword ? "text" : "password"}
           />
           <Divider hidden />
-          <Button icon="signup" content="Login" type="submit" disabled={submitDisabled} color="green" />
+          <Button
+            icon="signup"
+            content="Login"
+            type="submit"
+            color="green"
+            disabled={submitDisabled}
+          />
         </Segment>
       </Form>
       <FooterMessage />

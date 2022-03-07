@@ -1,7 +1,6 @@
 import axios from "axios";
 import { baseURL } from "./auth";
 import Cookies from "js-cookie";
-import catchErros from "./catchErrors";
 import catchErrors from "./catchErrors";
 
 const postAxios = axios.create({
@@ -9,10 +8,10 @@ const postAxios = axios.create({
   headers: { Authorization: `Bearer ${Cookies.get("token")}` },
 });
 
-export const deletePost = async (postId, setPost, setShowToastr) => {
+export const deletePost = async (postId, setPosts, setShowToastr) => {
   try {
     await postAxios.delete(`/${postId}`);
-    setPost((prev) => prev.filter((post) => post._id !== postId));
+    setPosts((prev) => prev.filter((post) => post._id !== postId));
     setShowToastr(true);
   } catch (error) {
     console.log(error);
@@ -36,20 +35,22 @@ export const likePost = async (postId, userId, setLikes, like = true) => {
 export const postComment = async (postId, user, text, setComments, setText) => {
   try {
     const res = await postAxios.post(`/comments/${postId}`, { text });
-    const newComments = {
+
+    const newComment = {
       _id: res.data,
       user,
       text,
       date: Date.now(),
     };
-    setComments((prev) => [newComments, ...prev]);
+
+    setComments((prev) => [newComment, ...prev]);
     setText("");
   } catch (error) {
     console.log(error);
   }
 };
 
-export const deleteComments = async (postId, commentId, setComments) => {
+export const deleteComment = async (postId, commentId, setComments) => {
   try {
     await postAxios.delete(`/comments/${postId}/${commentId}`);
     setComments((prev) => prev.filter((comment) => comment._id !== commentId));
@@ -58,7 +59,7 @@ export const deleteComments = async (postId, commentId, setComments) => {
   }
 };
 
-export const addPost = async (
+export const submitNewPost = async (
   text,
   location,
   picUrl,

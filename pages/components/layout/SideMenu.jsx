@@ -11,18 +11,17 @@ const SideMenu = ({
   return (
     <>
       <List
-        // style={{ marginTop: "1rem" }}
+        // style={{ marginTop: "2rem" }}
         size="big"
         verticalAlign="middle"
         selection
       >
         <Link href="/">
           <List.Item active={isActive("/")}>
-            {/* the reason that we set it to udefined is so that it wont break our because an enum needs somthing there, so udefined lets us keep it blank */}
             <Icon
               name="home"
               size="large"
-              color={isActive("/") ? "green" : undefined}
+              color={isActive("/") ? "teal" : undefined}
             />
             <List.Content>
               <List.Header content="Home" />
@@ -32,13 +31,12 @@ const SideMenu = ({
         <Divider hidden />
         <Link href="/messages">
           <List.Item active={isActive("/messages")}>
-            {/* the reason that we set it to udefined is so that it wont break our because an enum needs somthing there, so udefined lets us keep it blank */}
             <Icon
               name={unreadMessage ? "hand point right" : "mail outline"}
               size="large"
               color={
                 isActive("/messages")
-                  ? "green"
+                  ? "teal"
                   : unreadMessage
                   ? "orange"
                   : undefined
@@ -52,18 +50,18 @@ const SideMenu = ({
         <Divider hidden />
         <Link href="/notifications">
           <List.Item active={isActive("/notifications")}>
-            {/* the reason that we set it to udefined is so that it wont break our because an enum needs somthing there, so udefined lets us keep it blank */}
             <Icon
               name={unreadNotification ? "hand point right" : "bell outline"}
               size="large"
               color={
                 isActive("/notifications")
-                  ? "green"
+                  ? "teal"
                   : unreadNotification
                   ? "orange"
                   : undefined
               }
             />
+
             <List.Content>
               <List.Header content="Notifications" />
             </List.Content>
@@ -72,11 +70,10 @@ const SideMenu = ({
         <Divider hidden />
         <Link href={`/${username}`}>
           <List.Item active={router.query.username === username}>
-            {/* the reason that we set it to udefined is so that it wont break our because an enum needs somthing there, so udefined lets us keep it blank */}
             <Icon
               name="user"
               size="large"
-              color={router.query.username === username ? "green" : undefined}
+              color={router.query.username === username ? "teal" : undefined}
             />
             <List.Content>
               <List.Header content="Profile" />

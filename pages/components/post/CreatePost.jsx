@@ -1,17 +1,21 @@
 import React, { useState, useRef } from "react";
 import { Form, Button, Image, Divider, Message, Icon } from "semantic-ui-react";
-import { addPost } from "../../util/postActions";
+import { submitNewPost } from "../../util/postActions";
 import axios from "axios";
 
 const CreatePost = ({ user, setPosts }) => {
   const [newPost, setNewPost] = useState({ text: "", location: "" });
   const [loading, setLoading] = useState(false);
   const inputRef = useRef();
+
   const [error, setError] = useState(null);
   const [highlighted, setHighlighted] = useState(false);
+
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
-  //handlers
+
+  //*HANDLERS */
+
   const handleChange = (e) => {
     const { name, files, value } = e.target;
     if (name === "media") {
@@ -20,6 +24,7 @@ const CreatePost = ({ user, setPosts }) => {
     }
     setNewPost((prev) => ({ ...prev, [name]: value }));
   };
+
   const addStyles = () => ({
     textAlign: "center",
     height: "150px",
@@ -34,6 +39,7 @@ const CreatePost = ({ user, setPosts }) => {
     e.preventDefault();
     setLoading(true);
     let picUrl;
+
     if (media) {
       const formData = new FormData();
       formData.append("image", media, {
@@ -41,11 +47,11 @@ const CreatePost = ({ user, setPosts }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      const res = await axios.post("api/v1/uploads", formData);
+      const res = await axios.post("/api/v1/uploads", formData);
       picUrl = res.data.src;
     }
 
-    await addPost(
+    await submitNewPost(
       newPost.text,
       newPost.location,
       picUrl,
@@ -66,12 +72,12 @@ const CreatePost = ({ user, setPosts }) => {
           error
           onDismiss={() => setError(null)}
           content={error}
-          header="oops"
+          header="Oops!"
         />
         <Form.Group>
           <Image src={user.profilePicURL} circular avatar inline />
           <Form.TextArea
-            placeholder="Whats happening"
+            placeholder="What's happening"
             width={14}
             rows={4}
             onChange={handleChange}
@@ -84,9 +90,9 @@ const CreatePost = ({ user, setPosts }) => {
             value={newPost.location}
             name="location"
             onChange={handleChange}
-            label="add location"
+            label="Add Location"
             icon="map marker alternate"
-            placeholder='optional'
+            placeholder="Where did this happen?"
           />
           <input
             ref={inputRef}
@@ -94,7 +100,7 @@ const CreatePost = ({ user, setPosts }) => {
             name="media"
             style={{ display: "none" }}
             type="file"
-            accept="='image/*"
+            accept="image/*"
           />
         </Form.Group>
         <div
@@ -113,6 +119,7 @@ const CreatePost = ({ user, setPosts }) => {
             setHighlighted(true);
 
             const droppedFile = Array.from(e.dataTransfer.files);
+
             setMedia(droppedFile[0]);
             setMediaPreview(URL.createObjectURL(droppedFile[0]));
           }}
@@ -121,7 +128,7 @@ const CreatePost = ({ user, setPosts }) => {
             <Icon name="plus" size="big" />
           ) : (
             <Image
-              style={{ height: "150px", width: "150px" }}
+              style={{ height: "150px", width: "150px", objectFit: "contain" }}
               src={mediaPreview}
               alt="Post Image"
               centered
@@ -132,7 +139,7 @@ const CreatePost = ({ user, setPosts }) => {
         <Divider hidden />
         <Button
           circular
-          style={{ backgroundColor: "teal", color: "white" }}
+          color="teal"
           disabled={newPost.text === "" || loading}
           icon="send"
           content={<strong>Post</strong>}

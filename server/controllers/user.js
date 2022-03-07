@@ -11,19 +11,22 @@ const isEmail = require("validator/lib/isEmail");
 const getUsernameAvailable = async (req, res) => {
   const { username } = req.params;
   try {
-    if (username.length < 1) return res.status(401).send("username too short");
+    if (username.length < 1) return res.status(401).send("Username too short");
+
     const test = usernameRegex.test(username);
-    if (!test || usernameRegex.test(username)) {
-      return res.status(401).send("invalid username");
+    if (!(test || usernameRegex.test(username))) {
+      return res.status(401).send("Invalid username");
     }
+
     const user = await UserModel.findOne({
       username: username.toLowerCase(),
     });
-    if (user) return res.status(401).send("username already taken");
+    if (user) return res.status(401).send("Username already taken");
+
     return res.status(200).send("Available");
   } catch (error) {
     console.log(error);
-    res.status(500).send("there was a server error");
+    res.status(500).send(`There was a server error`);
   }
 };
 
@@ -31,29 +34,28 @@ const createUser = async (req, res) => {
   const {
     name,
     email,
-    userName,
+    username,
     password,
     bio,
     facebook,
-    twitter,
     youtube,
+    twitter,
     instagram,
   } = req.body.user;
 
-  if (!isEmail(email)) {
-    return res.status(401).send("that is not the correct email");
-  }
+  if (!isEmail(email)) return res.status(401).send("Invalid Email");
   if (password.length < 6)
-    return res.status(401).send("password must be atleast 6 chars long");
+    return res.status(401).send("Password must be at least 6 chars long");
+
   try {
     let user;
     user = await UserModel.findOne({ email: email.toLowerCase() });
-    if (user) return res.status(401).send("email already in use");
+    if (user) return res.status(401).send("Email already in use");
 
     user = new UserModel({
       name,
       email: email.toLowerCase(),
-      username: userName.toLowerCase(),
+      username: username.toLowerCase(),
       password,
       profilePicURL: req.body.profilePicURL || defaultProfilePicURL,
     });
@@ -64,10 +66,12 @@ const createUser = async (req, res) => {
     let profileFields = {};
     profileFields.user = user._id;
     if (bio) profileFields.bio = bio;
-    if (twitter) profileFields.twitter = twitter;
-    if (youtube) profileFields.youtube = youtube;
-    if (instagram) profileFields.instagram = instagram;
-    if (facebook) profileFields.facebook = facebook;
+
+    profileFields.social = {};
+    if (twitter) profileFields.social.twitter = twitter;
+    if (youtube) profileFields.social.youtube = youtube;
+    if (instagram) profileFields.social.instagram = instagram;
+    if (facebook) profileFields.social.facebook = facebook;
 
     await new ProfileModel(profileFields).save();
     await new FollowerModel({
@@ -76,7 +80,7 @@ const createUser = async (req, res) => {
       following: [],
     }).save();
 
-    const payload = { userID: user._id };
+    const payload = { userId: user._id };
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -86,28 +90,30 @@ const createUser = async (req, res) => {
         res.status(200).json(token);
       }
     );
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send("server err");
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Server Error");
   }
 };
 
 const postLoginUser = async (req, res) => {
-
   const { email, password } = req.body.user;
-  if (!isEmail(email)) return res.status(401).send("invalid email");
+
+  if (!isEmail(email)) return res.status(401).send("Invalid Email");
   if (password.length < 6)
-    return res.status(401).send("password needs to be atleast 6 long");
+    return res.status(401).send("Password must be at least 6 chars long");
 
   try {
     const user = await UserModel.findOne({
       email: email.toLowerCase(),
     }).select("+password");
-    if (!user) return res.status(401).send("invalid credentials");
-    const isPassword = await bcrypt.compare(password, user.password);
-    if (!isPassword) return res.status(401).send("invalid credentials");
-    const payload = { userId: user._id };
 
+    if (!user) return res.status(401).send("Invalid Credentials");
+    const isPassword = await bcrypt.compare(password, user.password);
+
+    if (!isPassword) return res.status(401).send("Invalid Credentials");
+
+    const payload = { userId: user._id };
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -119,9 +125,8 @@ const postLoginUser = async (req, res) => {
     );
   } catch (error) {
     console.log(error);
-    return res.status(500).senf("server error");
+    return res.status(500).send("Sever Error");
   }
-
 };
 
 module.exports = { getUsernameAvailable, createUser, postLoginUser };

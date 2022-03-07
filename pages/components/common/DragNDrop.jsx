@@ -1,14 +1,13 @@
-import React from "react";
-import { Form, Header, Icon, Segment, Image } from "semantic-ui-react";
+import { Form, Header, Icon, Image, Segment } from "semantic-ui-react";
 
 const DragNDrop = ({
-  highLighted,
-  setHighLighted,
+  highlighted,
+  setHighlighted,
   inputRef,
   handleChange,
   media,
-  mediaPreview,
   setMedia,
+  mediaPreview,
   setMediaPreview,
 }) => {
   return (
@@ -27,16 +26,18 @@ const DragNDrop = ({
             style={{ cursor: "pointer" }}
             onDragOver={(e) => {
               e.preventDefault();
-              setHighLighted(true);
+              setHighlighted(true);
             }}
             onDragLeave={(e) => {
               e.preventDefault();
-              setHighLighted(false);
+              setHighlighted(false);
             }}
             onDrop={(e) => {
               e.preventDefault();
-              setHighLighted(true);
+              setHighlighted(true);
+
               // console.log(e.dataTransfer.files);
+
               const droppedFile = e.dataTransfer.files[0];
               setMedia(droppedFile);
               setMediaPreview(URL.createObjectURL(droppedFile));
@@ -46,28 +47,27 @@ const DragNDrop = ({
             {mediaPreview === null ? (
               <>
                 <Segment
-                  {...(highLighted && { color: "green" })}
+                  {...(highlighted && { color: "green" })}
                   placeholder
                   basic
                 >
                   <Header icon>
                     <Icon name="file image outline" />
-                    Drag N Drop image here to upload
+                    Drag N Drop Image To Upload
                   </Header>
                 </Segment>
               </>
             ) : (
               <>
-                <>
-                  <Segment placeholder basic>
-                    <Image
-                      src={mediaPreview}
-                      size="medium"
-                      centered
-                      style={{ cursor: "pointer" }}
-                    />
-                  </Segment>
-                </>
+                <Segment placeholder basic>
+                  <Image
+                    src={mediaPreview}
+                    size="medium"
+                    centered
+                    style={{ cursor: "pointer" }}
+                    // onClick={() => inputRef.current.click()}
+                  />
+                </Segment>
               </>
             )}
           </div>
