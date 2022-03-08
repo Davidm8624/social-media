@@ -12,6 +12,7 @@ const Followers = ({
   loggedUserFollowStats,
   setLoggedUserFollowStats,
   profileUserId,
+  profile
 }) => {
   const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -80,7 +81,10 @@ const Followers = ({
           );
         })
       ) : (
-        <NoFollowData followersComponent={true} />
+        <NoFollowData
+          followersComponent={true}
+          profileName={profile.user.name}
+        />
       )}
     </>
   );
