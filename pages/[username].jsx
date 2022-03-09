@@ -98,7 +98,6 @@ const ProfilePage = ({
               loggedUserFollowStats={loggedUserFollowStats}
               setLoggedUserFollowStats={setLoggedUserFollowStats}
               profileUserId={profile.user._id}
-              profile={profile}
             />
           )}
         </Grid.Column>

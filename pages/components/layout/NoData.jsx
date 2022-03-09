@@ -22,26 +22,26 @@ export const NoProfilePost = () => {
 
 export const NoFollowData = ({
   profileName,
-  followersComponent = true,
+  followersComponent = false,
   followingComponent = false,
-}) => {
-  return <>
+}) => (
+  <>
     {followersComponent && (
-      <Message 
+      <Message
         icon="user outline"
         info
-        content={`${profileName.split(' ')[0]} does not have followers`}
+        content={`${profileName.split(" ")[0]} does not have followers`}
       />
     )}
     {followingComponent && (
-      <Message 
+      <Message
         icon="user outline"
         info
-        content={`${profileName.split(' ')[0]} does not follow anyone`}
+        content={`${profileName.split(" ")[0]} does not follow anyone`}
       />
     )}
   </>
-}
+);
 
 export const NoMessages = () => {
   return (

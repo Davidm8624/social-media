@@ -1,44 +1,42 @@
-//express app setup
-const app = require("express")();
+//* EXPRESS APP SETUP */
 const express = require("express");
 const { connectDB } = require("./server/util/connect");
-require("dotenv").config();
-
 const cloudinary = require("cloudinary").v2;
 const fileUpload = require("express-fileupload");
+
+require("dotenv").config();
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_KEY,
   api_secret: process.env.CLOUD_SECRET,
 });
 
-// const app = express();
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-//next app setup
-//create a check for dev vs production
-const dev = process.env.NODE_ENV !== "production";
+//* NEXT APP SETUP */
 const next = require("next");
-
-//there are giant error warning that pop up when in dev, production will just hide them, we should see them if we want to fix them
+//!create a check for development vs production
+const dev = process.env.NODE_ENV !== "production";
+//! there are giant error warnings that pop us when in dev.
 const nextApp = next({ dev });
-
-//this is a built in next router that will handle All the request made to the server
+//! this is a built in next router that will handle ALL requests made to the server
 const handler = nextApp.getRequestHandler();
 
-//middlewares
+//* MIDDLEWARES */
 const { authMiddleware } = require("./server/middleware/auth");
+
 app.use(express.json());
 app.use(fileUpload({ useTempFiles: true }));
 
-//routers
+//*ROUTERS */
 const userRoute = require("./server/routes/userRoutes");
 const authRoute = require("./server/routes/authRoutes");
 const searchRoute = require("./server/routes/search");
 const uploadRoute = require("./server/routes/uploadPicRoute");
 const postsRoute = require("./server/routes/postsRoute");
 const profileRoute = require("./server/routes/profile");
-const messagesRoute = require('./server/routes/messagesRoute')
+const messagesRoute = require("./server/routes/messagesRoutes");
 
 app.use("/api/v1/search", searchRoute);
 app.use("/api/v1/user", userRoute);
@@ -48,15 +46,22 @@ app.use("/api/v1/posts", authMiddleware, postsRoute);
 app.use("/api/v1/profile", authMiddleware, profileRoute);
 app.use("/api/v1/messages", authMiddleware, messagesRoute);
 
+//*SOCKETS */
+// const { Server } = require("socket.io");
+// const io = new Server(3001);
+
+// io.on("connect", (socket) => {
+//   socket.on("pingServer", (data) => {
+//     console.log(data);
+//   });
+// });
+
 connectDB();
 
 nextApp.prepare().then(() => {
   app.all("*", (req, res) => handler(req, res));
   app.listen(PORT, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(`server listining on ${PORT}`);
-    }
+    if (err) console.log(err);
+    else console.log(`Server listening @ ${PORT}`);
   });
 });

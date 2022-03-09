@@ -7,7 +7,7 @@ const defaultProfilePicURL = require("../util/defaultProfilePic");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail");
-const ChatModel = require('../models/ChatModel')
+const ChatModel = require("../models/ChatModel");
 
 const getUsernameAvailable = async (req, res) => {
   const { username } = req.params;
