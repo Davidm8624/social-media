@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { List, Popup, Image } from "semantic-ui-react";
 import axios from "axios";
-import { baseURL } from "../../util/auth";
+import { baseURL } from "../../util/baseURL";
 import catchErrors from "../../util/catchErrors";
 import Cookies from "js-cookie";
 import Router from "next/router";
-import { LikesPlaceholder } from "../layout/PlaceHolderGroup";
+import { LikesPlaceHolder } from "../layout/PlaceHolderGroup";
 
 const LikesList = ({ postId, trigger }) => {
   const [likesList, setLikesList] = useState([]);
@@ -14,19 +14,19 @@ const LikesList = ({ postId, trigger }) => {
   const getLikesList = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${baseURL}/api/v1/posts/likes/${postId}`, {
+      const res = await axios.get(`${baseURL}/api/v1/posts/like/${postId}`, {
         headers: { Authorization: `Bearer ${Cookies.get("token")}` },
       });
       setLikesList(res.data);
     } catch (error) {
-      console.log(catchErrors(error));
+      console.log(error);
     }
     setLoading(false);
   };
 
   return (
     <Popup
-      on={"click"}
+      on="click"
       onClose={() => setLikesList([])}
       onOpen={getLikesList}
       popperDependencies={[likesList]}
@@ -34,10 +34,10 @@ const LikesList = ({ postId, trigger }) => {
       wide
     >
       {loading ? (
-        <LikesPlaceholder />
+        <LikesPlaceHolder />
       ) : (
         <>
-          {likesList.length && (
+          {likesList && (
             <div
               style={{
                 overflow: "auto",

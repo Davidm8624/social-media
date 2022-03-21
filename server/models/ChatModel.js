@@ -9,12 +9,8 @@ const ChatSchema = new schema({
       messages: [
         {
           msg: { type: String, required: true },
-          sender: { type: schema.Types.ObjectId, ref: "User", required: true },
-          receiver: {
-            type: schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-          },
+          sender: { type: schema.Types.ObjectId, ref: "User" },
+          receiver: { type: schema.Types.ObjectId, ref: "User" },
           date: { type: Date },
         },
       ],
@@ -22,4 +18,4 @@ const ChatSchema = new schema({
   ],
 });
 
-module.exports = mongoose.model("Chat", ChatSchema);
+module.exports = mongoose.models.Chat || mongoose.model("Chat", ChatSchema);

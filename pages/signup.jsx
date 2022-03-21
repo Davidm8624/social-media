@@ -1,18 +1,22 @@
-import { FooterMessage, HeaderMessage } from "./components/common/Message";
-import { useState, useRef, useEffect } from "react";
+import React from "react";
 import {
+  FooterMessage,
+  HeaderMessage,
+} from "./components/common/WelcomeMessage";
+import { useState, useEffect } from "react";
+import {
+  Button,
+  Message,
+  Divider,
   Form,
   Segment,
   TextArea,
-  Divider,
-  Button,
-  Message,
 } from "semantic-ui-react";
 import CommonSocials from "./components/common/CommonSocials";
-import DragNDrop from "./components/common/dragNDrop";
+import ImageDropDiv from "./components/common/ImageDropDiv";
 import axios from "axios";
+import { setToken } from "./util/authUser";
 import catchErrors from "./util/catchErrors";
-import { setToken } from "./util/auth";
 let cancel;
 
 const signup = () => {
@@ -21,33 +25,77 @@ const signup = () => {
     email: "",
     password: "",
     bio: "",
-    youtube: "",
     twitter: "",
+    youtube: "",
     instagram: "",
     facebook: "",
   });
 
   const { name, email, password, bio } = user;
 
-  //*Form States */
+  //*Form useStates */
   const [formLoading, setFormLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
 
+  const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const [usernameAvail, setUsernameAvail] = useState(true);
   const [usernameLoading, setUsernameLoading] = useState(false);
-  const [usernameAvailable, setUsernameAvailable] = useState(false);
-  const [username, setUsername] = useState("");
 
   const [showSocialLinks, setShowSocialLinks] = useState(false);
 
-  const inputRef = useRef(null);
   const [highlighted, setHighlighted] = useState(false);
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
 
-  //*Functions */
+  const inputRef = React.useRef(null);
+
+  //*Form useEffects */
+
+  useEffect(() => {
+    setSubmitDisabled(!(name && password && email && username));
+  }, [user, username]);
+
+  useEffect(() => {
+    username === "" ? setUsernameAvail(false) : handleUsernameAvail();
+  }, [username]);
+
+  //*Form Handlers */
+
+  const handleUsernameAvail = async () => {
+    // const cancelToken = axios.CancelToken
+    setUsernameLoading(true);
+    try {
+      cancel && cancel();
+      const res = await axios.get(`/api/v1/user/${username}`, {
+        cancelToken: new axios.CancelToken((canceler) => {
+          cancel = canceler;
+        }),
+      });
+      if (res.data === "Available") {
+        setUsernameAvail(true);
+        setErrorMsg(null);
+        setUser((prev) => ({ ...prev, username }));
+      }
+    } catch (err) {
+      setUsernameAvail(false);
+      setErrorMsg("Username is not Available");
+    }
+    setUsernameLoading(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+
+    if (name === "media" && files.length) {
+      setMedia(() => files[0]);
+      setMediaPreview(() => URL.createObjectURL(files[0]));
+    }
+    setUser((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormLoading(true);
@@ -67,7 +115,7 @@ const signup = () => {
 
     if (media !== null && !profilePicURL) {
       setFormLoading(false);
-      return res.status(500).send("Image Upload Error");
+      return setErrorMsg("Error uploading image");
     }
 
     try {
@@ -84,49 +132,6 @@ const signup = () => {
     setFormLoading(false);
   };
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-
-    if (name === "media" && files.length) {
-      setMedia(() => files[0]);
-      setMediaPreview(() => URL.createObjectURL(files[0]));
-      setHighlighted(true);
-    } else {
-      setUser((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const checkUsername = async () => {
-    const cancelToken = axios.CancelToken;
-    setUsernameLoading(true);
-    try {
-      cancel && cancel();
-      const res = await axios.get(`/api/v1/user/${username}`, {
-        cancelToken: new cancelToken((canceler) => {
-          cancel = canceler;
-        }),
-      });
-      if (res.data === "Available") {
-        setUsernameAvailable(true);
-        setErrorMsg(null);
-        setUser((prev) => ({ ...prev, username }));
-      }
-    } catch (error) {
-      setErrorMsg("Username is not available");
-      setUsernameAvailable(false);
-    }
-    setUsernameLoading(false);
-  };
-
-  //*EFFECTS */
-  useEffect(() => {
-    setSubmitDisabled(!(name && email && password && username));
-  }, [user, username]);
-
-  useEffect(() => {
-    username === "" ? setUsernameAvailable(false) : checkUsername();
-  }, [username]);
-
   return (
     <>
       <HeaderMessage />
@@ -136,22 +141,22 @@ const signup = () => {
         onSubmit={handleSubmit}
       >
         <Segment>
-          <DragNDrop
-            inputRef={inputRef}
+          <ImageDropDiv
             handleChange={handleChange}
-            media={media}
-            setMedia={setMedia}
+            inputRef={inputRef}
+            highlighted={highlighted}
+            setHightlighted={setHighlighted}
             mediaPreview={mediaPreview}
             setMediaPreview={setMediaPreview}
-            highlighted={highlighted}
-            setHighlighted={setHighlighted}
+            setMedia={setMedia}
+            media={media}
           />
-          {/* DRAG AND DROP IMAGE HERE */}
-          <Message error content={errorMsg} header="Oops!" icon="meh" />
+          <Message error content={errorMsg} header="Oops" icon="meh" />
+
           <Form.Input
-            required
             label="Name"
-            placeholder="name"
+            required
+            placeholder="Name"
             name="name"
             value={name}
             onChange={handleChange}
@@ -159,9 +164,9 @@ const signup = () => {
             iconPosition="left"
           />
           <Form.Input
-            required
             label="Email"
-            placeholder="email"
+            required
+            placeholder="Email"
             name="email"
             value={email}
             onChange={handleChange}
@@ -170,54 +175,55 @@ const signup = () => {
             type="email"
           />
           <Form.Input
-            required
             label="Password"
-            placeholder="password"
+            required
+            placeholder="Password"
             name="password"
             value={password}
             onChange={handleChange}
             icon={{
               name: showPassword ? "eye slash" : "eye",
-              // color: "red",
-              circular: true,
               link: true,
-              onClick: () => setShowPassword(!showPassword),
+              circular: true,
+              onClick: () => {
+                setShowPassword(!showPassword);
+              },
             }}
-            iconPosition="left"
             type={showPassword ? "text" : "password"}
+            iconPosition="left"
           />
           <Form.Input
             loading={usernameLoading}
-            error={!usernameAvailable}
-            required
+            error={!usernameAvail}
             label="Username"
+            required
             placeholder="Username"
+            name="username"
             value={username}
-            icon={usernameAvailable ? "check" : "close"}
-            // color={usernameAvailable ? "green" : "red"}
-            iconPosition="left"
             onChange={(e) => setUsername(e.target.value)}
+            icon={usernameAvail ? "check" : "close"}
+            iconPosition="left"
           />
-          <Divider hidden></Divider>
+          <Divider hidden />
           <Form.Field
             control={TextArea}
             name="bio"
             value={bio}
             onChange={handleChange}
-            placeholder="bio"
+            placeholder="Bio"
           />
           <CommonSocials
             user={user}
             handleChange={handleChange}
-            showSocialLinks={showSocialLinks}
             setShowSocialLinks={setShowSocialLinks}
+            showSocialLinks={showSocialLinks}
           />
           <Button
             icon="signup"
-            content="Sign Up"
+            content="Signup"
             type="submit"
             color="green"
-            disabled={submitDisabled || !usernameAvailable}
+            disabled={submitDisabled || !usernameAvail}
           />
         </Segment>
       </Form>

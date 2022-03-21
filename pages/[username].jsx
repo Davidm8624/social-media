@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { baseURL } from "./util/auth";
+import { baseURL } from "./util/baseURL";
 import { parseCookies } from "nookies";
-import { Grid, Placeholder } from "semantic-ui-react";
 import Cookies from "js-cookie";
 import CardPost from "./components/post/CardPost";
+import { Grid } from "semantic-ui-react";
 import ProfileMenuTabs from "./components/profile/ProfileMenuTabs";
 import ProfileHeader from "./components/profile/ProfileHeader";
-import { NoProfilePost } from "./components/layout/NoData";
-import { PlaceholderPosts } from "./components/layout/PlaceHolderGroup";
-import Followers from "./components/profile/followers";
+import { NoProfilePosts } from "./components/layout/NoData";
+import { PlaceHolderPosts } from "./components/layout/PlaceHolderGroup";
+import Followers from "./components/profile/Followers";
+import Following from "./components/profile/following";
 
 const ProfilePage = ({
   errorLoading,
@@ -18,7 +19,7 @@ const ProfilePage = ({
   followersLength,
   followingLength,
   user,
-  followStats,
+  followData,
 }) => {
   const router = useRouter();
   const { username } = router.query;
@@ -28,14 +29,15 @@ const ProfilePage = ({
   const [loading, setLoading] = useState(false);
   const [activeItem, setActiveItem] = useState("profile");
   const [loggedUserFollowStats, setLoggedUserFollowStats] =
-    useState(followStats);
+    useState(followData);
 
-  const handleItemClick = (clickedTab) => setActiveItem(clickedTab);
+  const handleItemClicked = (clickedTab) => setActiveItem(clickedTab);
 
   useEffect(() => {
     const getPosts = async () => {
       setLoading(true);
       try {
+        const { username } = router.query;
         const res = await axios.get(
           `${baseURL}/api/v1/profile/posts/${username}`,
           {
@@ -44,65 +46,81 @@ const ProfilePage = ({
         );
         setPosts(res.data);
       } catch (error) {
-        console.log(error);
+        console.log("error loading posts");
       }
       setLoading(false);
     };
     getPosts();
   }, [router.query.username]);
 
+  if (!profile) return null;
+
   return (
-    <Grid stackable>
-      <Grid.Row>
-        <Grid.Column>
-          <ProfileMenuTabs
-            activeItem={activeItem}
-            handleItemClick={handleItemClick}
-            followersLength={followersLength}
-            followingLength={followingLength}
-            ownAccount={ownAccount}
-            loggedUserFollowStats={loggedUserFollowStats}
-          />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          {activeItem === "profile" && (
-            <>
-              <ProfileHeader
-                profile={profile}
-                ownAccount={ownAccount}
+    <>
+      <Grid stackable>
+        <Grid.Row>
+          <Grid.Column>
+            <ProfileMenuTabs
+              activeItem={activeItem}
+              handleItemClick={handleItemClicked}
+              followersLength={followersLength}
+              followingLength={followingLength}
+              ownAccount={ownAccount}
+              loggedUserFollowStats={loggedUserFollowStats}
+            />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            {activeItem === "profile" && (
+              <>
+                <ProfileHeader
+                  profile={profile}
+                  ownAccount={ownAccount}
+                  loggedUserFollowStats={loggedUserFollowStats}
+                  setLoggedUserFollowStats={setLoggedUserFollowStats}
+                />
+                {loading ? (
+                  <PlaceHolderPosts />
+                ) : posts ? (
+                  posts.map((post) => {
+                    return (
+                      <CardPost
+                        key={post._id}
+                        post={post}
+                        user={user}
+                        setPosts={setPosts}
+                      />
+                    );
+                  })
+                ) : (
+                  <NoProfilePosts />
+                )}
+              </>
+            )}
+            {activeItem === "followers" && (
+              <Followers
+                user={user}
                 loggedUserFollowStats={loggedUserFollowStats}
                 setLoggedUserFollowStats={setLoggedUserFollowStats}
+                profileUserId={profile.user._id}
               />
-
-              {loading ? (
-                <PlaceholderPosts />
-              ) : posts ? (
-                posts.map((post) => (
-                  <CardPost
-                    key={post._id}
-                    post={post}
-                    user={user}
-                    setPosts={setPosts}
-                  />
-                ))
-              ) : (
-                <NoProfilePost />
-              )}
-            </>
-          )}
-          {activeItem === "followers" && (
-            <Followers
-              user={user}
-              loggedUserFollowStats={loggedUserFollowStats}
-              setLoggedUserFollowStats={setLoggedUserFollowStats}
-              profileUserId={profile.user._id}
-            />
-          )}
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
+            )}
+            {activeItem === "following" && (
+              <Following
+                user={user}
+                loggedUserFollowStats={loggedUserFollowStats}
+                setLoggedUserFollowStats={setLoggedUserFollowStats}
+                profileUserId={profile.user._id}
+              />
+            )}
+            {activeItem === "updateProfile" && (
+              <UpdateProfile profile={profile} />
+            )}
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </>
   );
 };
 

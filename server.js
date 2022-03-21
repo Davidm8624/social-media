@@ -1,4 +1,4 @@
-//* EXPRESS APP SETUP */
+//* EXPRESS APP SETUP
 const express = require("express");
 const { connectDB } = require("./server/util/connect");
 const cloudinary = require("cloudinary").v2;
@@ -14,48 +14,41 @@ cloudinary.config({
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//* NEXT APP SETUP */
+//* NEXT APP SETUP
+//! imports tools from the next library
 const next = require("next");
-//!create a check for development vs production
+//! find out if this is a dev or production build
 const dev = process.env.NODE_ENV !== "production";
-//! there are giant error warnings that pop us when in dev.
+//! creates a project with dev error templates
 const nextApp = next({ dev });
-//! this is a built in next router that will handle ALL requests made to the server
+//! import req handlers for the server
 const handler = nextApp.getRequestHandler();
 
-//* MIDDLEWARES */
-const { authMiddleware } = require("./server/middleware/auth");
+//* EXPRESS MIDDLEWARES
+const { auth } = require("./server/middleware/auth");
 
 app.use(express.json());
 app.use(fileUpload({ useTempFiles: true }));
 
-//*ROUTERS */
-const userRoute = require("./server/routes/userRoutes");
-const authRoute = require("./server/routes/authRoutes");
-const searchRoute = require("./server/routes/search");
-const uploadRoute = require("./server/routes/uploadPicRoute");
-const postsRoute = require("./server/routes/postsRoute");
-const profileRoute = require("./server/routes/profile");
-const messagesRoute = require("./server/routes/messagesRoutes");
+//* ROUTES
+const userRoutes = require("./server/routes/userRoutes");
+const authRoutes = require("./server/routes/authRoutes");
+const uploadRoutes = require("./server/routes/uploadPicRoutes");
+const searchRoutes = require("./server/routes/searchRoutes");
+const postRoutes = require("./server/routes/postsRoutes");
+const profileRoutes = require("./server/routes/profile");
+const messageRoutes = require("./server/routes/messagesRoutes");
 
-app.use("/api/v1/search", searchRoute);
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/uploads", uploadRoute);
-app.use("/api/v1/posts", authMiddleware, postsRoute);
-app.use("/api/v1/profile", authMiddleware, profileRoute);
-app.use("/api/v1/messages", authMiddleware, messagesRoute);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/uploads", uploadRoutes);
+app.use("/api/v1/search", searchRoutes);
+app.use("/api/v1/posts", auth, postRoutes);
+app.use("/api/v1/profile", auth, profileRoutes);
+app.use("/api/v1/messages", auth, messageRoutes);
+// app.use('/api/v1/search', require('./server/routes/searchRoutes'))
 
-//*SOCKETS */
-// const { Server } = require("socket.io");
-// const io = new Server(3001);
-
-// io.on("connect", (socket) => {
-//   socket.on("pingServer", (data) => {
-//     console.log(data);
-//   });
-// });
-
+//* APP STARTUP
 connectDB();
 
 nextApp.prepare().then(() => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { baseURL } from "./auth";
+import { baseURL } from "./baseURL";
 import catchErrors from "./catchErrors";
 import Cookies from "js-cookie";
 import Router from "next/router";
@@ -9,11 +9,11 @@ const profileAxios = axios.create({
   headers: { Authorization: `Bearer ${Cookies.get("token")}` },
 });
 
-export const followUser = async (userToFollowId, setLoggedUserFollowStats) => {
+export const followUser = async (userToFollowId, setUserFollowStats) => {
   try {
     await profileAxios.post(`/follow/${userToFollowId}`);
 
-    setLoggedUserFollowStats((prev) => ({
+    setUserFollowStats((prev) => ({
       ...prev,
       following: [...prev.following, { user: userToFollowId }],
     }));
@@ -21,14 +21,11 @@ export const followUser = async (userToFollowId, setLoggedUserFollowStats) => {
     console.log(error);
   }
 };
-
-export const unfollowUser = async (
-  userToUnfollowId,
-  setLoggedUserFollowStats
-) => {
+export const unfollowUser = async (userToUnfollowId, setUserFollowStats) => {
   try {
     await profileAxios.post(`/unfollow/${userToUnfollowId}`);
-    setLoggedUserFollowStats((prev) => ({
+
+    setUserFollowStats((prev) => ({
       ...prev,
       following: prev.following.filter(
         (following) => following.user !== userToUnfollowId

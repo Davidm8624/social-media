@@ -18,7 +18,7 @@ const ProfileHeader = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const isFollowing = loggedUserFollowStats.following.some(
-    (eachUser) => eachUser.user === profile.user._id
+    (each) => each.user === profile.user._id
   );
 
   return (
@@ -54,14 +54,8 @@ const ProfileHeader = ({
                     )}
                     {profile.social.instagram && (
                       <List.Item>
-                        <List.Icon name="instagram" color="red" />
+                        <List.Icon name="instagram" color="instagram" />
                         <List.Content content={profile.social.instagram} />
-                      </List.Item>
-                    )}
-                    {profile.social.twitter && (
-                      <List.Item>
-                        <List.Icon name="twitter" color="blue" />
-                        <List.Content content={profile.social.twitter} />
                       </List.Item>
                     )}
                     {profile.social.youtube && (
@@ -70,21 +64,22 @@ const ProfileHeader = ({
                         <List.Content content={profile.social.youtube} />
                       </List.Item>
                     )}
+                    {profile.social.twitter && (
+                      <List.Item>
+                        <List.Icon name="twitter" color="twitter" />
+                        <List.Content content={profile.social.twitter} />
+                      </List.Item>
+                    )}
                   </List>
                 </>
               ) : (
-                <p>No Social Media Links</p>
+                <p>No Socials Provided</p>
               )}
             </Grid.Row>
           </Grid.Column>
           <Grid.Column width={5} stretched style={{ textAlign: "center" }}>
             <Grid.Row>
-              <Image
-                size="large"
-                circular
-                avatar
-                src={profile.user.profilePicURL}
-              />
+              <Image size="large" avatar src={profile.user.profilePicURL} />
             </Grid.Row>
             <Divider hidden />
 

@@ -1,35 +1,36 @@
-import Layout from "../pages/components/layout/Layout";
+import Layout from "./components/layout/Layout";
 import "../styles/globals.css";
 import "semantic-ui-css/semantic.min.css";
-import { baseURL, redirectUser } from "./util/auth";
-import { destroyCookie, parseCookies } from "nookies";
+import { redirectUser } from "./util/authUser";
+import { parseCookies, destroyCookie } from "nookies";
+import { baseURL } from "./util/baseURL";
 import axios from "axios";
 
-function MyApp({ Component, pageProps }) {
-  // function MyApp(AppContext) {
-  //   const { Component, pageProps } = AppContext;
-  //   console.log(AppContext);
+const MyApp = ({ Component, pageProps }) => {
+  // function MyApp(appContext) {
+  //   console.log(appContext);
+  //   const { Component, pageProps } = appContext;
   return (
     <Layout user={pageProps.user}>
       <Component {...pageProps} />
     </Layout>
   );
-}
+};
 
 MyApp.getInitialProps = async ({ ctx, Component }) => {
   const { token } = parseCookies(ctx);
   let pageProps = {};
 
-  const protectedRoutes = ["/", "/[username]", "/messages"];
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+  }
 
+  const protectedRoutes = ["/", "/[username]", "/messages"];
   const isProtectedRoute = protectedRoutes.includes(ctx.pathname);
 
   if (!token) {
     isProtectedRoute && redirectUser(ctx, "/login");
   } else {
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
-    }
     try {
       const res = await axios.get(`${baseURL}/api/v1/auth`, {
         headers: {
@@ -37,11 +38,12 @@ MyApp.getInitialProps = async ({ ctx, Component }) => {
         },
       });
 
-      const { user, followStats } = res.data;
+      const { user, followData } = res.data;
 
       if (user) !isProtectedRoute && redirectUser(ctx, "/");
+
       pageProps.user = user;
-      pageProps.followStats = followStats;
+      pageProps.followData = followData;
     } catch (error) {
       destroyCookie(ctx, "token");
       redirectUser(ctx, "/login");

@@ -1,10 +1,13 @@
-import { FooterMessage, HeaderMessage } from "./components/common/Message";
-import { useState, useRef, useEffect } from "react";
-import { Form, Segment, Message, Divider, Button } from "semantic-ui-react";
-import catchErrors from "./util/catchErrors";
 import axios from "axios";
-import { setToken } from "./util/auth";
 import Cookies from "js-cookie";
+import React, { useState, useEffect } from "react";
+import { Button, Divider, Form, Message, Segment } from "semantic-ui-react";
+import {
+  FooterMessage,
+  HeaderMessage,
+} from "./components/common/WelcomeMessage";
+import { setToken } from "./util/authUser";
+import catchErrors from "./util/catchErrors";
 
 const login = () => {
   const [user, setUser] = useState({
@@ -13,12 +16,14 @@ const login = () => {
   });
 
   const { email, password } = user;
+
+  //*STATES */
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const [submitDisabled, setSubmitDisabled] = useState(true);
 
-  //* Handers ~~~~~~~~~~~~~~~~~~ */
+  //*HANDLERS */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
@@ -27,27 +32,23 @@ const login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormLoading(true);
-
     try {
       const res = await axios.post("/api/v1/user/login", { user });
       setToken(res.data);
     } catch (error) {
-      console.log(error);
       const errorMsg = catchErrors(error);
       setErrorMsg(errorMsg);
     }
-
     setFormLoading(false);
   };
 
-  //*useEffects~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
+  //*EFFECTS */
   useEffect(() => {
     setSubmitDisabled(!(email && password));
   }, [user]);
 
   useEffect(() => {
-    document.title = "Welcome Back!";
+    document.title = `Welcome Back!`;
     const userEmail = Cookies.get("userEmail");
     if (userEmail) setUser((prev) => ({ ...prev, email: userEmail }));
   }, []);
@@ -71,9 +72,9 @@ const login = () => {
             required
             label="Email"
             placeholder="Email"
-            name="email"
             value={email}
             onChange={handleChange}
+            name="email"
             icon="envelope"
             iconPosition="left"
             type="email"
@@ -82,25 +83,26 @@ const login = () => {
             required
             label="Password"
             placeholder="Password"
-            name="password"
             value={password}
             onChange={handleChange}
+            name="password"
             icon={{
               name: showPassword ? "eye slash" : "eye",
-              // color: "red",
-              circular: true,
               link: true,
-              onClick: () => setShowPassword(!showPassword),
+              circular: true,
+              onClick: () => {
+                setShowPassword(!showPassword);
+              },
             }}
             iconPosition="left"
             type={showPassword ? "text" : "password"}
           />
           <Divider hidden />
           <Button
-            icon="signup"
-            content="Login"
-            type="submit"
             color="green"
+            content="Login"
+            icon="signup"
+            type="submit"
             disabled={submitDisabled}
           />
         </Segment>

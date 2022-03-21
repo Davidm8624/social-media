@@ -1,8 +1,7 @@
-import React from "react";
 import { Button, Divider, Form, Message } from "semantic-ui-react";
 
 const CommonSocials = ({
-  user: { facebook, instagram, youtube, twitter },
+  user: { facebook, twitter, instagram, youtube },
   handleChange,
   showSocialLinks,
   setShowSocialLinks,
@@ -11,7 +10,7 @@ const CommonSocials = ({
     <>
       <Button
         content="Add Social Links"
-        color="orange"
+        color="blue"
         icon="at"
         type="button"
         onClick={() => setShowSocialLinks(!showSocialLinks)}
@@ -23,13 +22,14 @@ const CommonSocials = ({
           <Message
             icon="attention"
             info
-            size="mini"
-            header="Social Media Links Are Optional!!!"
+            size="tiny"
+            header="Social Medial Links Are Optional!!!"
           />
+
           <Form.Input
             icon="facebook f"
             iconPosition="left"
-            placeholder="facebook"
+            placeholder="Facebook"
             name="facebook"
             value={facebook}
             onChange={handleChange}
@@ -37,7 +37,7 @@ const CommonSocials = ({
           <Form.Input
             icon="twitter"
             iconPosition="left"
-            placeholder="twitter"
+            placeholder="Twitter"
             name="twitter"
             value={twitter}
             onChange={handleChange}
@@ -45,7 +45,7 @@ const CommonSocials = ({
           <Form.Input
             icon="instagram"
             iconPosition="left"
-            placeholder="instagram"
+            placeholder="Instagram"
             name="instagram"
             value={instagram}
             onChange={handleChange}
@@ -53,7 +53,7 @@ const CommonSocials = ({
           <Form.Input
             icon="youtube"
             iconPosition="left"
-            placeholder="youtube"
+            placeholder="YouTube"
             name="youtube"
             value={youtube}
             onChange={handleChange}

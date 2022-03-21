@@ -1,21 +1,22 @@
 const UserModel = require("../models/UserModel");
 const FollowerModel = require("../models/FollowerModel");
 const ProfileModel = require("../models/ProfileModel");
-const usernameRegex = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/gim;
-const defaultProfilePicURL = require("../util/defaultProfilePic");
+const defaultProfilePic = require("../util/defaultPic");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail");
 const ChatModel = require("../models/ChatModel");
+const regexUsername = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/gim;
 
 const getUsernameAvailable = async (req, res) => {
   const { username } = req.params;
+
   try {
     if (username.length < 1) return res.status(401).send("Username too short");
 
-    const test = usernameRegex.test(username);
-    if (!(test || usernameRegex.test(username))) {
+    const test = regexUsername.test(username);
+    if (!(test || regexUsername.test(username))) {
       return res.status(401).send("Invalid username");
     }
 
@@ -25,13 +26,13 @@ const getUsernameAvailable = async (req, res) => {
     if (user) return res.status(401).send("Username already taken");
 
     return res.status(200).send("Available");
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(`There was a server error`);
+  } catch (err) {
+    console.log(err);
   }
 };
 
 const createUser = async (req, res) => {
+  console.log(req.body);
   const {
     name,
     email,
@@ -44,21 +45,21 @@ const createUser = async (req, res) => {
     instagram,
   } = req.body.user;
 
-  if (!isEmail(email)) return res.status(401).send("Invalid Email");
-  if (password.length < 6)
-    return res.status(401).send("Password must be at least 6 chars long");
-
+  if (!isEmail(email)) return res.status(401).send("Invalid");
+  if (password.length < 6) {
+    return res.status(401).send("Password Must be at least 6 chars long");
+  }
   try {
     let user;
     user = await UserModel.findOne({ email: email.toLowerCase() });
-    if (user) return res.status(401).send("Email already in use");
+    if (user) return res.status(401).send("Email already used");
 
     user = new UserModel({
       name,
       email: email.toLowerCase(),
       username: username.toLowerCase(),
       password,
-      profilePicURL: req.body.profilePicURL || defaultProfilePicURL,
+      profilePicURL: req.body.profilePicURL || defaultProfilePic,
     });
 
     user.password = await bcrypt.hash(password, 10);
@@ -69,10 +70,10 @@ const createUser = async (req, res) => {
     if (bio) profileFields.bio = bio;
 
     profileFields.social = {};
-    if (twitter) profileFields.social.twitter = twitter;
-    if (youtube) profileFields.social.youtube = youtube;
-    if (instagram) profileFields.social.instagram = instagram;
     if (facebook) profileFields.social.facebook = facebook;
+    if (twitter) profileFields.social.twitter = twitter;
+    if (instagram) profileFields.social.instagram = instagram;
+    if (youtube) profileFields.social.youtube = youtube;
 
     await new ProfileModel(profileFields).save();
     await new FollowerModel({
@@ -81,7 +82,7 @@ const createUser = async (req, res) => {
       following: [],
     }).save();
 
-    const payload = { userId: user._id };
+    const payload = { userID: user._id };
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -93,11 +94,11 @@ const createUser = async (req, res) => {
     );
   } catch (err) {
     console.log(err);
-    return res.status(500).send("Server Error");
+    return res.status(500).send("Server error");
   }
 };
 
-const postLoginUser = async (req, res) => {
+const postUserLogin = async (req, res) => {
   const { email, password } = req.body.user;
 
   if (!isEmail(email)) return res.status(401).send("Invalid Email");
@@ -110,8 +111,8 @@ const postLoginUser = async (req, res) => {
     }).select("+password");
 
     if (!user) return res.status(401).send("Invalid Credentials");
-    const isPassword = await bcrypt.compare(password, user.password);
 
+    const isPassword = await bcrypt.compare(password, user.password);
     if (!isPassword) return res.status(401).send("Invalid Credentials");
 
     const chatModel = await ChatModel.findOne({ user: user._id });
@@ -129,8 +130,8 @@ const postLoginUser = async (req, res) => {
     );
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Sever Error");
+    return res.status(500).send("Server Error");
   }
 };
 
-module.exports = { getUsernameAvailable, createUser, postLoginUser };
+module.exports = { createUser, getUsernameAvailable, postUserLogin };

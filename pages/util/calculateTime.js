@@ -19,7 +19,11 @@ const calculateTime = (createdAt) => {
       </>
     );
   } else {
-    return <Moment format="MM/DD/YYYY hh:mm A">{createdAt}</Moment>;
+    return (
+      <>
+        <Moment format="MM/DD/YYYY hh:mm A">{createdAt}</Moment>
+      </>
+    );
   }
 };
 

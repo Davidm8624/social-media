@@ -1,48 +1,56 @@
-import { Container, Grid, Ref, Sticky, Visibility } from "semantic-ui-react";
-import HeadTag from "./HeadTag";
-import Navbar from "./navbar";
+import HeadTags from "./HeadTags";
+import Navbar from "./Navbar";
+import SideMenu from "./SideMenu";
+import Search from "./SearchComponent";
+import { createRef } from "react";
+import {
+  Container,
+  Ref,
+  Grid,
+  Sticky,
+  Segment,
+  Visibility,
+} from "semantic-ui-react";
+
+//! V this is for the nprogress bar
 import nprogress from "nprogress";
 import Router from "next/router";
-import { createRef } from "react";
-import SideMenu from "./SideMenu";
-import SearchComponent from "./SearchComponent";
 
 const Layout = ({ children, user }) => {
   Router.onRouteChangeStart = () => nprogress.start();
   Router.onRouteChangeComplete = () => nprogress.done();
   Router.onRouteChangeError = () => nprogress.done();
 
-  //createRef refreshes on render()
-  //userRef refreshes on router.reload() page refreh
+  //createRef will update the reference on re-render
+  //useRef will only update on refresh
   const contextRef = createRef();
 
   return (
     <>
-      <HeadTag />
+      <HeadTags />
       {user ? (
         <>
           <div
             style={{
               marginLeft: "1rem",
               marginRight: "1rem",
-              // marginTop: "2rem",
             }}
           >
             <Ref innerRef={contextRef}>
               <Grid>
-                <Grid.Column width={2}>
+                <Grid.Column floated="left" width={3}>
                   <Sticky context={contextRef}>
                     <SideMenu user={user} />
                   </Sticky>
                 </Grid.Column>
-
-                <Grid.Column width={10}>
+                <Grid.Column width={9}>
                   <Visibility context={contextRef}>{children}</Visibility>
                 </Grid.Column>
-
-                <Grid.Column width={3}>
+                <Grid.Column floated="left" width={4}>
                   <Sticky context={contextRef}>
-                    <SearchComponent />
+                    <Segment basic>
+                      <Search />
+                    </Segment>
                   </Sticky>
                 </Grid.Column>
               </Grid>
@@ -52,9 +60,7 @@ const Layout = ({ children, user }) => {
       ) : (
         <>
           <Navbar />
-          <Container text style={{ paddingTop: "1rem" }}>
-            {children}
-          </Container>
+          <Container text>{children}</Container>
         </>
       )}
     </>

@@ -4,36 +4,25 @@ import { submitNewPost } from "../../util/postActions";
 import axios from "axios";
 
 const CreatePost = ({ user, setPosts }) => {
+  //*STATES */
   const [newPost, setNewPost] = useState({ text: "", location: "" });
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef();
-
   const [error, setError] = useState(null);
   const [highlighted, setHighlighted] = useState(false);
-
   const [media, setMedia] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
+  const inputRef = useRef();
 
   //*HANDLERS */
-
   const handleChange = (e) => {
-    const { name, files, value } = e.target;
-    if (name === "media") {
+    const { name, value, files } = e.target;
+    if (name === "media" && files.length) {
       setMedia(files[0]);
       setMediaPreview(URL.createObjectURL(files[0]));
+    } else {
+      setNewPost((prev) => ({ ...prev, [name]: value }));
     }
-    setNewPost((prev) => ({ ...prev, [name]: value }));
   };
-
-  const addStyles = () => ({
-    textAlign: "center",
-    height: "150px",
-    width: "150px",
-    border: "dotted",
-    paddingTop: media === null && "60px",
-    cursor: "pointer",
-    borderColor: highlighted ? "green" : "black",
-  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,7 +39,6 @@ const CreatePost = ({ user, setPosts }) => {
       const res = await axios.post("/api/v1/uploads", formData);
       picUrl = res.data.src;
     }
-
     await submitNewPost(
       newPost.text,
       newPost.location,
@@ -65,89 +53,96 @@ const CreatePost = ({ user, setPosts }) => {
     setLoading(false);
   };
 
+  const addStyles = () => ({
+    textAlign: "center",
+    height: "150px",
+    width: "150px",
+    border: "dotted",
+    paddingTop: media === null && "60px",
+    cursor: "pointer",
+    borderColor: highlighted ? "green" : "black",
+  });
+
   return (
-    <>
-      <Form error={error !== null} onSubmit={handleSubmit}>
-        <Message
-          error
-          onDismiss={() => setError(null)}
-          content={error}
-          header="Oops!"
+    <Form error={error !== null} onSubmit={handleSubmit}>
+      <Message
+        error
+        content={error}
+        onDismiss={() => setError(null)}
+        header="Oops"
+      />
+      <Form.Group>
+        <Image src={user.profilePicURL} avatar inline />
+        <Form.TextArea
+          placeholder="what's happening?"
+          name="text"
+          value={newPost.text}
+          onChange={handleChange}
+          rows={4}
+          width={14}
         />
-        <Form.Group>
-          <Image src={user.profilePicURL} circular avatar inline />
-          <Form.TextArea
-            placeholder="What's happening"
-            width={14}
-            rows={4}
-            onChange={handleChange}
-            name="text"
-            value={newPost.text}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Input
-            value={newPost.location}
-            name="location"
-            onChange={handleChange}
-            label="Add Location"
-            icon="map marker alternate"
-            placeholder="Where did this happen?"
-          />
-          <input
-            ref={inputRef}
-            onChange={handleChange}
-            name="media"
-            style={{ display: "none" }}
-            type="file"
-            accept="image/*"
-          />
-        </Form.Group>
-        <div
-          onClick={() => inputRef.current.click()}
-          style={addStyles()}
-          onDrag={(e) => {
-            e.preventDefault();
-            setHighlighted(true);
-          }}
-          onDragLeave={(e) => {
-            e.preventDefault();
-            setHighlighted(false);
-          }}
-          onDrop={(e) => {
-            e.preventDefault();
-            setHighlighted(true);
-
-            const droppedFile = Array.from(e.dataTransfer.files);
-
-            setMedia(droppedFile[0]);
-            setMediaPreview(URL.createObjectURL(droppedFile[0]));
-          }}
-        >
-          {media === null ? (
-            <Icon name="plus" size="big" />
-          ) : (
-            <Image
-              style={{ height: "150px", width: "150px", objectFit: "contain" }}
-              src={mediaPreview}
-              alt="Post Image"
-              centered
-              size="medium"
-            />
-          )}
-        </div>
-        <Divider hidden />
-        <Button
-          circular
-          color="teal"
-          disabled={newPost.text === "" || loading}
-          icon="send"
-          content={<strong>Post</strong>}
-          loading={loading}
+      </Form.Group>
+      <Form.Group>
+        <Form.Input
+          value={newPost.location}
+          name="location"
+          onChange={handleChange}
+          label="Add Location"
+          icon="map marker alternate"
+          placeholder="Where?"
         />
-      </Form>
-      <Divider />
-    </>
+        <input
+          ref={inputRef}
+          name="media"
+          onChange={handleChange}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+        />
+      </Form.Group>
+      <div
+        style={addStyles()}
+        onClick={() => inputRef.current.click()}
+        onDrag={(e) => {
+          e.preventDefault();
+          setHighlighted(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setHighlighted(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setHighlighted(true);
+
+          const droppedFile = Array.from(e.dataTransfer.files);
+
+          setMedia(droppedFile[0]);
+          setMediaPreview(URL.createObjectURL(droppedFile[0]));
+        }}
+      >
+        {media === null ? (
+          <Icon name="plus" size="big" />
+        ) : (
+          <Image
+            style={{ height: "150px", width: "150px", objectFit: "contain" }}
+            src={mediaPreview}
+            alt="post image"
+            centered
+            size="medium"
+          />
+        )}
+      </div>
+      <Divider hidden />
+      <Button
+        loading={loading}
+        circular
+        disabled={newPost.text === "" || loading}
+        color="teal"
+        icon="send"
+        content={<strong>Post</strong>}
+      />
+    </Form>
   );
 };
 

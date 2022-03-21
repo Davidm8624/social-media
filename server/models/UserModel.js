@@ -9,7 +9,6 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     password: {
       type: String,
@@ -19,12 +18,10 @@ const UserSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
+      unique: true,
     },
-    profilePicURL: {
-      type: String,
-    },
+    profilePicURL: { type: String },
     newMessagePopup: {
       type: Boolean,
       default: true,
@@ -39,11 +36,11 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "root"],
       default: "user",
     },
     resetToken: { type: String },
-    expireToken: { type: Date },
+    expireToken: { type: String },
   },
   { timestamps: true }
 );

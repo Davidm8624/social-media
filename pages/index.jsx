@@ -1,32 +1,27 @@
 import axios from "axios";
 import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
-import { baseURL } from "./util/auth";
+import { baseURL } from "./util/baseURL";
 import { NoPosts } from "./components/layout/NoData";
 import { Segment } from "semantic-ui-react";
 import CreatePost from "./components/post/CreatePost";
 import CardPost from "./components/post/CardPost";
+// import { PostDeleteToastr } from "./components/layout/Toastr";
 
-const index = ({ user, postData, errorLoading }) => {
+const index = ({ user, followData, errorLoading, postData }) => {
   const [posts, setPosts] = useState(postData);
   const [showToastr, setShowToastr] = useState(false);
-
-  //*UseEffects ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
   useEffect(() => {
     document.title = `Welcome, ${user.name.split(" ")[0]}`;
   }, []);
 
-  useEffect(() => {
-    showToastr && setTimeout(() => setShowToastr(false), 3000);
-  }, [showToastr]);
-
   return (
     <>
-      {/* SHOWTOASTR STUFF */}
+      {/* {showToastr && <PostDeleteToastr />} */}
       <Segment>
         <CreatePost user={user} setPosts={setPosts} />
-        {!posts || errorLoading ? (
+        {posts.length === 0 || errorLoading ? (
           <NoPosts />
         ) : (
           posts.map((post) => (
@@ -62,26 +57,30 @@ index.getInitialProps = async (ctx) => {
 
 export default index;
 
-// const index = ({ posts, token }) => {
+//posts are pageProps
+// const index = ({ posts, ctx }) => {
 //   return (
-//     <>
-//       <h1>{token}</h1>
-//       {posts.map((post) => {
-//         return (
-//           <div key={post.id}>
-//             <h1>{post.title}</h1>
-//             <p>{post.body}</p>
-//             <Divider />
-//           </div>
-//         );
-//       })}
-//     </>
+//     <div>
+// {/* {posts &&
+//   posts.map((post) => {
+//     return (
+//       <div key={post.id}>
+//         <h1>{post.title}</h1>
+//         <p>{post.body}</p>
+//         <Divider />
+//       </div>
+//     );
+//   })} */}
+//     </div>
 //   );
 // };
 
 // index.getInitialProps = async (ctx) => {
-//   const cookie = parseCookies(ctx);
+// const pageProps = await checkToken(ctx);
+// try {
 //   const res = await axios.get("https://jsonplaceholder.typicode.com/posts");
-//   // console.log(ctx);
-//   return { posts: res.data, token: cookie.token };
+//   return { posts: res.data };
+// } catch (error) {
+//   return { errorProp: true };
+// }
 // };

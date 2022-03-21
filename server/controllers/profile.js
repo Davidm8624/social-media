@@ -7,16 +7,14 @@ const bcrypt = require("bcryptjs");
 const getProfile = async (req, res) => {
   try {
     const { username } = req.params;
-
     const user = await UserModel.findOne({ username: username.toLowerCase() });
     if (!user) {
-      return res.status(404).send("No User Found");
+      return res.status(404).send("user not found");
     }
 
     const profile = await ProfileModel.findOne({ user: user._id }).populate(
       "user"
     );
-
     const profileFollowStats = await FollowerModel.findOne({ user: user._id });
 
     return res.status(200).json({
@@ -32,16 +30,17 @@ const getProfile = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Error at getProfile");
+    return res.status(500).send("error @ getProfile");
   }
 };
+
 const getUserPosts = async (req, res) => {
   try {
     const { username } = req.params;
     const user = await UserModel.findOne({ username: username.toLowerCase() });
 
     if (!user) {
-      return res.status(404).send("User Not Found");
+      return res.status(404).send("user not found");
     }
 
     const posts = await PostModel.find({ user: user._id })
@@ -52,20 +51,22 @@ const getUserPosts = async (req, res) => {
     return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Error at getUserPosts");
+    return res.status(500).send("error @ getUserPosts");
   }
 };
 
 const getFollowers = async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log(userId);
     const user = await FollowerModel.findOne({ user: userId }).populate(
       "followers.user"
     );
-    return res.status(200).json(user.followers);
+    console.log(user);
+    res.status(200).json(user.followers);
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Error at getFollowers");
+    return res.status(500).send("error @ getFollowers");
   }
 };
 const getFollowing = async (req, res) => {
@@ -74,12 +75,13 @@ const getFollowing = async (req, res) => {
     const user = await FollowerModel.findOne({ user: userId }).populate(
       "following.user"
     );
-    return res.status(200).json(user.following);
+    res.status(200).json(user.following);
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Error at getFollowing");
+    return res.status(500).send("error @ getFollowing");
   }
 };
+
 const followUser = async (req, res) => {
   try {
     const { userId } = req;
@@ -88,13 +90,13 @@ const followUser = async (req, res) => {
     const user = await FollowerModel.findOne({ user: userId });
     const userToFollow = await FollowerModel.findOne({ user: userToFollowId });
 
-    if (!user || !userToFollow) return res.status(404).send("user not found");
+    if (!user || !userToFollow) return res.status(404).send("User Not Found");
 
     const isFollowing = user.following.find(
-      (eachUser) => eachUser.user._id.toString() === userToFollowId
+      (eachUser) => eachUser.user.toString() === userToFollowId
     );
 
-    if (isFollowing) return res.status(401).send("user already followed");
+    if (isFollowing) return res.status(401).send("User is already followed");
 
     await user.following.unshift({ user: userToFollowId });
     await userToFollow.followers.unshift({ user: userId });
@@ -105,15 +107,18 @@ const followUser = async (req, res) => {
     return res.status(200).send("User Followed");
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Error at followUser");
+    return res.status(500).send("error @ followUser");
   }
 };
+
 const unfollowUser = async (req, res) => {
   try {
     const { userId } = req;
     const { userToUnfollowId } = req.params;
 
-    const user = await FollowerModel.findOne({ user: userId });
+    const user = await FollowerModel.findOne({
+      user: userId,
+    });
     const userToUnfollow = await FollowerModel.findOne({
       user: userToUnfollowId,
     });
@@ -121,40 +126,26 @@ const unfollowUser = async (req, res) => {
     if (!user || !userToUnfollow) return res.status(404).send("user not found");
 
     const isFollowingIndex = user.following.findIndex(
-      (eachUser) => eachUser.user._id.toString() === userToUnfollowId
+      (eachUser) => eachUser.user.toString() === userToUnfollowId
     );
 
     if (isFollowingIndex === -1)
-      return res.status(401).send("user not followed before");
+      return res.status(401).send("User not followed before");
 
     await user.following.splice(isFollowingIndex, 1);
     await user.save();
 
     const removeFollowerIndex = userToUnfollow.followers.findIndex(
-      (eachUser) => eachUser.user._id.toString() === userId
+      (eachUser) => eachUser.user.toString() === userId
     );
 
     await userToUnfollow.followers.splice(removeFollowerIndex, 1);
     await userToUnfollow.save();
 
-    return res.status(200).send(`User Unfollowed`);
+    return res.status(200).send("User Unfollowed");
   } catch (error) {
     console.log(error);
-    return res.status(500).send("Error at unfollowUser");
-  }
-};
-const updateProfile = async (req, res) => {
-  try {
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send("Error at updateProfile");
-  }
-};
-const updatePassword = async (req, res) => {
-  try {
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send("Error at updatePassword");
+    return res.status(500).send("error @ unfollowUser");
   }
 };
 
@@ -165,6 +156,4 @@ module.exports = {
   getFollowing,
   followUser,
   unfollowUser,
-  updateProfile,
-  updatePassword,
 };

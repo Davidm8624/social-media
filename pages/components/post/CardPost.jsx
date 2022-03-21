@@ -16,16 +16,16 @@ import Link from "next/link";
 import LikesList from "./LikesList";
 import ImageModal from "./ImageModal";
 import NoImageModal from "./NoImageModal";
-import calculateTime from "../../util/calculateTime";
 import { deletePost, likePost } from "../../util/postActions";
+import calculateTime from "../../util/calculateTime";
 
 const CardPost = ({ post, user, setPosts, setShowToastr }) => {
   const [likes, setLikes] = useState(post.likes);
-  const isLiked = likes.find((like) => like.user === user._id);
-
   const [comments, setComments] = useState(post.comments);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  const isLiked = likes.filter((like) => like.user === user._id).length > 0;
 
   const addPropsToModal = () => ({
     post,
@@ -39,8 +39,25 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
 
   return (
     <>
+      {showModal && (
+        <Modal
+          open={showModal}
+          closeIcon
+          closeOnDimmerClick
+          onClose={() => setShowModal(false)}
+        >
+          <Modal.Content>
+            {post.picUrl ? (
+              <ImageModal {...addPropsToModal()} />
+            ) : (
+              <NoImageModal {...addPropsToModal()} />
+            )}
+          </Modal.Content>
+        </Modal>
+      )}
+
       <Segment basic>
-        <Card color="teal" fluid>
+        <Card fluid color="purple">
           {post.picUrl && (
             <Image
               src={post.picUrl}
@@ -48,7 +65,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
               floated="left"
               wrapped
               ui={false}
-              alt="Post Image"
+              alt="PostImage"
               onClick={() => setShowModal(true)}
             />
           )}
@@ -59,10 +76,11 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
               avatar
               circular
             />
-            {(user.role === "admin" || post.user._id === user._id) && (
+
+            {(user.role === "root" || post.user._id === user._id) && (
               <>
                 <Popup
-                  on={"click"}
+                  on="click"
                   position="top right"
                   trigger={
                     <Image
@@ -73,7 +91,7 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
                     />
                   }
                 >
-                  <Header as={"h4"} content="Are you sure?" />
+                  <Header as="h4" content="Are you sure?" />
                   <p>This action is irreversable!</p>
 
                   <Button
@@ -95,14 +113,20 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
             </Card.Header>
 
             <Card.Meta>{calculateTime(post.createdAt)}</Card.Meta>
+
             {post.location && <Card.Meta content={post.location} />}
 
             <Card.Description
-              style={{ fontSize: "1.5rem", letterSpacing: "0.2px" }}
+              style={{
+                fontSize: "17px",
+                letterSpacing: "0.1px",
+                wordSpacing: "0.35px",
+              }}
             >
               {post.text}
             </Card.Description>
           </Card.Content>
+
           <Card.Content extra>
             <Icon
               name={isLiked ? "heart" : "heart outline"}
@@ -110,22 +134,25 @@ const CardPost = ({ post, user, setPosts, setShowToastr }) => {
               style={{ cursor: "pointer" }}
               onClick={() => likePost(post._id, user._id, setLikes, !isLiked)}
             />
+
             <LikesList
               postId={post._id}
               trigger={
-                likes.length && (
+                likes && (
                   <span className="spanLikesList">
                     {`${likes.length} ${likes.length === 1 ? "like" : "likes"}`}
                   </span>
                 )
               }
             />
+
             <Icon
               name="comment outline"
               style={{ marginLeft: "7px" }}
               color="blue"
             />
-            {comments.length &&
+
+            {comments &&
               comments.map(
                 (comment, i) =>
                   i < 3 && (

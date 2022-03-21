@@ -7,40 +7,40 @@ import axios from "axios";
 import { baseURL } from "../../util/baseURL";
 import Cookies from "js-cookie";
 
-const Followers = ({
+const Following = ({
   user,
   loggedUserFollowStats,
-  setLoggedUserFollowStats,
+  setUserFollowStats,
   profileUserId,
 }) => {
-  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
-    const getFollowers = async () => {
+    const getFollowing = async () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${baseURL}/api/v1/profile/followers/${profileUserId}`,
+          `${baseURL}/api/v1/profile/following/${profileUserId}`,
           { headers: { Authorization: `Bearer ${Cookies.get("token")}` } }
         );
 
-        setFollowers(res.data);
+        setFollowing(res.data);
       } catch (error) {
         console.log(error);
       }
       setLoading(false);
     };
-    getFollowers();
+    getFollowing();
   }, []);
 
   return (
     <>
       {loading ? (
         <Spinner />
-      ) : followers ? (
-        followers.map((follower) => {
+      ) : following ? (
+        following.map((follower) => {
           const isFollowing = loggedUserFollowStats.following.some(
             (each) => each.user === follower.user.id
           );
@@ -80,10 +80,10 @@ const Followers = ({
           );
         })
       ) : (
-        <NoFollowData followersComponent={true} />
+        <NoFollowData followingComponent={true} />
       )}
     </>
   );
 };
 
-export default Followers;
+export default Following;
