@@ -8,7 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "axios": "^0.25.0",
+    "axios": "^1.6.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.28.1",
     "dotenv": "^14.3.2",
